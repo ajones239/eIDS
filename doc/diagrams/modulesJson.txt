@@ -1,0 +1,152 @@
+@startjson
+{
+    "modules": [
+        {
+            "id": 1,
+            "name": "Generic CSV parsing module",
+            "type": "INPUT_PARSING",
+            "description": "A module for importing CSV files.",
+            "stream": false,
+            "dataFrequency": "ONE_TIME_ACCESS",
+            "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
+        },
+        {
+            "id": 2,
+            "name": "CIC-ID-S2017 compatible NIC monitor",
+            "type": "INPUT_PARSING",
+            "description": "A module for monitoring NICs. Produces datasets that resemble the CIC-IDS-2017 dataset.",
+            "stream": true,
+            "dataFrequency": "CONTINUOUS",
+            "outputData": [
+                {
+                    "index": 0,
+                    "label": "Destination Port",
+                    "description": "The target port on monitored system.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 1,
+                    "label": "Flow Duration",
+                    "description": "The amount of time of network traffic flow.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 2,
+                    "label": "Total Fwd Packets",
+                    "description": "Number of IP packets sent to monitored system.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 3,
+                    "label": "Total Backward Packets",
+                    "description": "Number of IP packets sent from monitored system.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 4,
+                    "label": "Total Length of Fwd Packets",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 5,
+                    "label": "Total Length of Bwd Packets",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 6,
+                    "label": "Fwd Packet Length Max",
+                    "isArray": false,
+                    "type": "INTEGER"
+                }
+            ],
+            "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
+        },
+        {
+            "id": 3,
+            "name": "Example dummy processing module",
+            "type": "PROCESSING",
+            "description": "A module for importing CSV files.",
+            "stream": false,
+            "dataFrequency": "CUSTOM",
+            "dataFrequencyN": 2,
+            "inputRowCount": 1,
+            "inputData": [
+                {
+                    "index": 0,
+                    "label": "Destination Port",
+                    "description": "The target port on monitored system.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 1,
+                    "label": "Flow Duration",
+                    "description": "The amount of time of network traffic flow.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                }
+            ],
+            "outputData": [
+                {
+                    "index": 0,
+                    "label": "Destination Port",
+                    "description": "The target port on monitored system.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 1,
+                    "label": "Flow Duration",
+                    "description": "The amount of time of network traffic flow.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                }
+            ],
+            "associatedInputModules": [1],
+            "associatedOutputModules": [4, 5, 7],
+            "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
+        },
+        {
+            "id": 4,
+            "name": "Example analysis module",
+            "type": "ANALYSIS",
+            "description": "An example analysis module classifying network traffic into different types of attacks.",
+            "stream": false,
+            "inputRowCount": 1,
+            "inputData": [
+                {
+                    "index": 0,
+                    "label": "Destination Port",
+                    "description": "The target port on monitored system.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                },
+                {
+                    "index": 1,
+                    "label": "Flow Duration",
+                    "description": "The amount of time of network traffic flow.",
+                    "isArray": false,
+                    "type": "INTEGER"
+                }
+            ],
+            "outputData": [],
+            "associatedInputModules": [3],
+            "associatedOutputModules": [],
+            "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
+        },
+        {
+            "id": 5,
+            "name": "Email alert",
+            "type": "ACTION",
+            "description": "Sends an email alert.",
+            "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
+        }
+    ]
+}
+@endjson
