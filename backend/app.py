@@ -1,4 +1,4 @@
 import modules
 
-a = modules.Module()
+a = modules.CSVImporter()
 # b = modules.ModuleIO()

@@ -2,6 +2,7 @@
     abstract class ModuleIO {
         stream
         dataFrequency
+        dataFrequencyN
         outputRowCount
         outputFormat
         inputRowCount
@@ -9,8 +10,9 @@
         associatedInputModules
         associatedOutputModules
 
-        getData()
-        getDataQueue()
+        addInput(data)
+        getOutput()
+        getOutputQueue()
     }
 
     abstract class Module {

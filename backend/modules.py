@@ -1,11 +1,27 @@
+from enum import Enum
 from abc import ABC, abstractmethod
-import queue
-import threading
+from queue import Queue
+from threading import Lock
+import numpy as np
+
+
+class ModuleType(Enum):
+    INPUT_PARSING = 1
+    PROCESSING = 2
+    ANALYSIS = 3
+    ACTION = 4
+
+
+class DataFrequency(Enum):
+    ONE_TIME_ACCESS = 1
+    CONTINUOUS = 2
+    CUSTOM = 3
+
 
 class Module(ABC):
 
     def __init__(self):
-        super().__init__()
+        super(Module, self).__init__()
 
         self.id = None
         self.name = None
@@ -13,13 +29,13 @@ class Module(ABC):
         self.type = None
         self.implementation = None
 
-        self._logLock = threading.Lock()
-        self._eventLock = threading.Lock()
+        self._logLock = Lock()
+        self._eventLock = Lock()
         self._logQueues = []
         self._eventQueues = []
 
     def getLogQueue(self):
-        q = queue.Queue()
+        q = Queue()
         with self._logLock:
             self._logQueues.append(q)
         return q
@@ -30,7 +46,7 @@ class Module(ABC):
                 q.put(msg)
 
     def getEventQueue(self):
-        q = queue.Queue()
+        q = Queue()
         with self._eventLock:
             self._eventQueues.append(q)
         return q
@@ -44,7 +60,7 @@ class Module(ABC):
 class ModuleIO(ABC):
 
     def __init__(self):
-        super().__init__()
+        super(ModuleIO, self).__init__()
 
         self.stream = None
         self.dataFrequency = None
@@ -55,22 +71,45 @@ class ModuleIO(ABC):
         self.associatedInputModules = None
         self.associatedOutputModules = None
 
-        self._data = None
-        self._dataLock = threading.Lock()
-        self._dataQueues = []
+        self._output = None
+        self._outputLock = Lock()
+        self._outputQueues = []
 
-    def _addData(self, data):
-        with self._dataLock:
-            for q in self._dataQueues:
-                q.put(data)
+    def _addOutput(self, output):
+        with self._outputLock:
+            for q in self._outputQueues:
+                q.put(output)
 
-    def getDataQueue(self):
-        q = queue.Queue()
-        with self._dataLock:
-            self._dataQueues.append(q)
+    def getOutputQueue(self):
+        q = Queue()
+        with self._outputLock:
+            self._outputQueues.append(q)
         return q
 
     @abstractmethod
-    def getData(self):
+    def addInput(self, data):
         pass
+
+    @abstractmethod
+    def getOutput(self):
+        pass
+
+
+class CSVImporter(Module, ModuleIO):
+
+    def __init__(self):
+        super(CSVImporter, self).__init__()
+        self.id = None
+        self.name = 'CSV Importer'
+        self.description = 'A generic input parsing module for parsing CSV files. This module converts the data argument of addInput to a numpy array, assuming all values are data.'
+        self.type = ModuleType.INPUT_PARSING
+        self.implementation = None
+        self.stream = False
+        self.dataFrequency = DataFrequency.ONE_TIME_ACCESS
+
+    def getOutput(self):
+        return self.output
+
+    def addInput(self, data):
+        self.output = np.array(data[0])
 
