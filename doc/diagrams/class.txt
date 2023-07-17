@@ -1,0 +1,60 @@
+@startuml
+    abstract class ModuleIO {
+        stream
+        dataFrequency
+        outputRowCount
+        outputFormat
+        inputRowCount
+        inputFormat
+        associatedInputModules
+        associatedOutputModules
+
+        getData()
+        getDataQueue()
+    }
+
+    abstract class Module {
+        id
+        name
+        description
+        type
+        implementation
+        
+        getLogQueue()
+        getEventQueue()
+    }
+
+    class InputParsingModule {
+    }
+
+    class ProcessingModule {
+    }
+
+    class AnalysisModule {
+    }
+
+    class Condition {
+        moduleId
+        outputField
+        comparison
+        data
+    }
+        
+    class ActionModule {
+        conditions
+
+        {abstract} doAction(data)
+    }
+
+    Module <|-- InputParsingModule
+    Module <|-- ProcessingModule
+    Module <|-- AnalysisModule
+    Module <|-- ActionModule
+
+    ModuleIO <|-- InputParsingModule
+    ModuleIO <|-- ProcessingModule
+    ModuleIO <|-- AnalysisModule
+
+    ActionModule *-- Condition
+
+@enduml
