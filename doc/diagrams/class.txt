@@ -1,51 +1,81 @@
 @startuml
-    abstract class ModuleIO {
-        stream
-        dataFrequency
-        dataFrequencyN
-        outputRowCount
-        outputFormat
-        inputRowCount
-        inputFormat
-        associatedInputModules
-        associatedOutputModules
+    enum DataFrequency {
+        ONE_TIME_ACCESS
+        CONTINUOUS
+        CUSTOM
+    }
 
-        addInput(data)
-        getOutput()
-        getOutputQueue()
+    enum ModuleType {
+        INPUT_PARSING
+        PROCESSING
+        ANALYSIS
+        ACTION
+    }
+
+    abstract class ModuleIO {
+        stream: boolean
+        dataFrequency: DataFrequency
+        dataFrequencyN: int
+
+        consumesInput: boolean
+        inputRowCount: int
+        inputFormat: IOFormat[]
+        associatedInputModules: id[]
+
+        producesOutput: boolean
+        outputRowCount: int
+        outputFormat: IOFormat[]
+        associatedOutputModules: id[]
+
+        getOutputQueue(): queue
+        {abstract} getOutput(): array
+        {abstract} addInput(data: array)
+    }
+
+    class IOFormat {
+        index: int
+        label: string
+    }
+
+    class Resource {
+        name: string
+        data: b64_string
     }
 
     abstract class Module {
-        id
-        name
-        description
-        type
-        implementation
+        id: id
+        name: string
+        description: string
+        type: ModuleType
+        implementation: b64_string
+        resources: Resource[]
         
-        getLogQueue()
-        getEventQueue()
+        getLogQueue(): queue
+        getEventQueue(): queue
+        {abstract} start(): void
+        {abstract} stop(): void
     }
 
-    class InputParsingModule {
+    abstract class InputParsingModule {
     }
 
-    class ProcessingModule {
+    abstract class ProcessingModule {
     }
 
-    class AnalysisModule {
+    abstract class AnalysisModule {
     }
 
     class Condition {
-        moduleId
-        outputField
-        comparison
-        data
+        moduleId: id
+        outputField: int
+        comparison: operator
+        data: object
     }
         
-    class ActionModule {
-        conditions
+    abstract class ActionModule {
+        conditions: Condition[]
 
-        {abstract} doAction(data)
+        {abstract} doAction(data: array): void
     }
 
     Module <|-- InputParsingModule
@@ -57,6 +87,10 @@
     ModuleIO <|-- ProcessingModule
     ModuleIO <|-- AnalysisModule
 
-    ActionModule *-- Condition
+    ActionModule o-- Condition
+    DataFrequency <-- ModuleIO
+    IOFormat <-- ModuleIO
+    ModuleType <-- Module
+    Module o-- Resource
 
 @enduml

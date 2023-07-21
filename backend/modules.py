@@ -18,6 +18,29 @@ class DataFrequency(Enum):
     CUSTOM = 3
 
 
+class IOFormat:
+
+    def __init__(self):
+        self.index = None
+        self.label = None
+
+
+class Resource:
+
+    def __init__(self):
+        self.name = None
+        self.data = None
+
+
+class Condition:
+
+    def __init__(self):
+        self.moduleId = None
+        self.outputField = None
+        self.comparison = None
+        self.data = None
+
+
 class Module(ABC):
 
     def __init__(self):
@@ -28,6 +51,7 @@ class Module(ABC):
         self.description = None
         self.type = None
         self.implementation = None
+        self.data = None
 
         self._logLock = Lock()
         self._eventLock = Lock()
@@ -56,6 +80,14 @@ class Module(ABC):
             for q in self._eventQueues:
                 q.put(event)
 
+    @abstractmethod
+    def stop(self, data):
+        pass
+
+    @abstractmethod
+    def start(self, data):
+        pass
+
 
 class ModuleIO(ABC):
 
@@ -64,11 +96,16 @@ class ModuleIO(ABC):
 
         self.stream = None
         self.dataFrequency = None
-        self.outputRowCount = None
-        self.outputFormat = None
+        self.dataFrequencyN = None
+
+        self.consumesInput = None
         self.inputRowCount = None
         self.inputFormat = None
         self.associatedInputModules = None
+
+        self.producesOutput = None
+        self.outputRowCount = None
+        self.outputFormat = None
         self.associatedOutputModules = None
 
         self._output = None
@@ -95,6 +132,30 @@ class ModuleIO(ABC):
         pass
 
 
+class InputParsingModule(ABC):
+
+    def __init__(self):
+        super(InputParsingModule, self).__init__()
+
+
+class ProcessingModule(ABC):
+
+    def __init__(self):
+        super(ProcessingModule, self).__init__()
+
+
+class AnalysisModule(ABC):
+
+    def __init__(self):
+        super(AnalysisModule, self).__init__()
+
+
+class ActionModule(ABC):
+
+    def __init__(self):
+        super(ActionModule, self).__init__()
+
+
 class CSVImporter(Module, ModuleIO):
 
     def __init__(self):
@@ -112,4 +173,10 @@ class CSVImporter(Module, ModuleIO):
 
     def addInput(self, data):
         self.output = np.array(data[0])
+
+    def start(self, data):
+        pass
+
+    def stop(self, data):
+        pass
 
