@@ -8,6 +8,18 @@
             "description": "A module for importing CSV files.",
             "stream": false,
             "dataFrequency": "ONE_TIME_ACCESS",
+            "consumesInput": false,
+            "producesOutput": true,
+            "outputFormat": [
+                {
+                    "index": 0,
+                    "label": "Destination Port",
+                },
+                {
+                    "index": 1,
+                    "label": "Flow Duration",
+                }
+            ],
             "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
         },
         {
@@ -16,53 +28,37 @@
             "type": "INPUT_PARSING",
             "description": "A module for monitoring NICs. Produces datasets that resemble the CIC-IDS-2017 dataset.",
             "stream": true,
+            "consumesInput": false,
+            "producesOutput": true,
             "dataFrequency": "CONTINUOUS",
             "outputData": [
                 {
                     "index": 0,
-                    "label": "Destination Port",
-                    "description": "The target port on monitored system.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Destination Port"
                 },
                 {
                     "index": 1,
-                    "label": "Flow Duration",
-                    "description": "The amount of time of network traffic flow.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Flow Duration"
                 },
                 {
                     "index": 2,
-                    "label": "Total Fwd Packets",
-                    "description": "Number of IP packets sent to monitored system.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Total Fwd Packets"
                 },
                 {
                     "index": 3,
-                    "label": "Total Backward Packets",
-                    "description": "Number of IP packets sent from monitored system.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Total Backward Packets"
                 },
                 {
                     "index": 4,
-                    "label": "Total Length of Fwd Packets",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Total Length of Fwd Packets"
                 },
                 {
                     "index": 5,
-                    "label": "Total Length of Bwd Packets",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Total Length of Bwd Packets"
                 },
                 {
                     "index": 6,
-                    "label": "Fwd Packet Length Max",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Fwd Packet Length Max"
                 }
             ],
             "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
@@ -73,39 +69,28 @@
             "type": "PROCESSING",
             "description": "A module for importing CSV files.",
             "stream": false,
+            "consumesInput": true,
             "dataFrequency": "CUSTOM",
             "dataFrequencyN": 2,
             "inputRowCount": 1,
-            "inputData": [
+            "inputFormat": [
                 {
                     "index": 0,
-                    "label": "Destination Port",
-                    "description": "The target port on monitored system.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Destination Port"
                 },
                 {
                     "index": 1,
-                    "label": "Flow Duration",
-                    "description": "The amount of time of network traffic flow.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Flow Duration"
                 }
             ],
             "outputData": [
                 {
                     "index": 0,
-                    "label": "Destination Port",
-                    "description": "The target port on monitored system.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Destination Port"
                 },
                 {
                     "index": 1,
-                    "label": "Flow Duration",
-                    "description": "The amount of time of network traffic flow.",
-                    "isArray": false,
-                    "type": "INTEGER"
+                    "label": "Flow Duration"
                 }
             ],
             "associatedInputModules": [1],
@@ -118,7 +103,9 @@
             "type": "ANALYSIS",
             "description": "An example analysis module classifying network traffic into different types of attacks.",
             "stream": false,
+            "consumesInput": true,
             "inputRowCount": 1,
+            "producesOutput": false,
             "inputData": [
                 {
                     "index": 0,
@@ -144,6 +131,8 @@
             "id": 5,
             "name": "Email alert",
             "type": "ACTION",
+            "producesOutput": false,
+            "consumesInput": false,
             "description": "Sends an email alert.",
             "implementation": "aW1wb3J0IHNvbWUgbGliCgpjbGFzcyBDTmFtZToKICAgIGRlZiBzb21lTWV0aG9kKHNlbGYpOgogICAgICAgIHBhc3M"
         }
