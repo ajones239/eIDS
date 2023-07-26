@@ -78,6 +78,12 @@
         {abstract} doAction(data: array): void
     }
 
+    class Worker {
+        modules: Module
+
+        run(): void
+    }
+
     Module <|-- InputParsingModule
     Module <|-- ProcessingModule
     Module <|-- AnalysisModule
@@ -92,5 +98,7 @@
     IOFormat <-- ModuleIO
     ModuleType <-- Module
     Module o-- Resource
+
+    Worker o-- Module
 
 @enduml
