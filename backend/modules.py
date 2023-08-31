@@ -131,31 +131,32 @@ class ModuleIO(ABC):
     def getOutput(self):
         pass
 
-class InputParsingModule(ABC):
+
+class InputParsingModule(Module, ModuleIO):
 
     def __init__(self):
         super(InputParsingModule, self).__init__()
 
 
-class ProcessingModule(ABC):
+class ProcessingModule(Module, ModuleIO):
 
     def __init__(self):
         super(ProcessingModule, self).__init__()
 
 
-class AnalysisModule(ABC):
+class AnalysisModule(Module, ModuleIO):
 
     def __init__(self):
         super(AnalysisModule, self).__init__()
 
 
-class ActionModule(ABC):
+class ActionModule(Module):
 
     def __init__(self):
         super(ActionModule, self).__init__()
 
 
-class CSVImporter(Module, ModuleIO):
+class CSVImporter(InputParsingModule):
 
     def __init__(self):
         super(CSVImporter, self).__init__()
