@@ -46,7 +46,7 @@ class Module(ABC):
     def __init__(self):
         super(Module, self).__init__()
 
-        self.id = None
+        self._id = None
         self.name = None
         self.description = None
         self.type = None
@@ -130,7 +130,6 @@ class ModuleIO(ABC):
     @abstractmethod
     def getOutput(self):
         pass
-
 
 class InputParsingModule(ABC):
 
