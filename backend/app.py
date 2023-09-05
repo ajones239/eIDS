@@ -1,7 +1,7 @@
 import modules
-import api
+from api import api
 
 a = modules.CSVImporter()
 
-api.runApi()
+api.run()
 

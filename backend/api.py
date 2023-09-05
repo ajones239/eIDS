@@ -1,11 +1,8 @@
 from flask import Flask, Response, request, jsonify
-import uuid
-import pymongo
+import controlplane
+from modules import ModuleException
 
 api = Flask(__name__)
-
-dbclient = pymongo.MongoClient('mongodb://localhost:27017/')
-moduleCollection = dbclient['eIDS']['modules']
 
 @api.route('/health')
 def ping():
@@ -13,12 +10,14 @@ def ping():
 
 @api.route('/module', methods = ['POST'])
 def addModule():
-    m = request.get_json()
-    m['_id'] = str(uuid.uuid4())
-    dbres = moduleCollection.insert_one(m)
-    resp = jsonify({'id': dbres.inserted_id})
-    resp.status_code = 200
+    try:
+        resp = jsonify({'id': controlplane.addModule(request.get_json())})
+        resp.status_code = 200
+    except ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+    except Exception as e:
+        resp = Response()
+        resp.status_code = 500
     return resp
 
-def runApi():
-    api.run()

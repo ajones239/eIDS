@@ -5,6 +5,12 @@ from threading import Lock
 import numpy as np
 
 
+class ModuleException(Exception):
+
+    def __init__(self, message):
+        self.message = message
+
+
 class ModuleType(Enum):
     INPUT_PARSING = 1
     PROCESSING = 2
@@ -180,3 +186,6 @@ class CSVImporter(InputParsingModule):
     def stop(self, data):
         pass
 
+def verifyModuleJson(m):
+    pass
+#    raise ModuleException("some error")
