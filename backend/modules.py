@@ -186,6 +186,19 @@ class CSVImporter(InputParsingModule):
     def stop(self, data):
         pass
 
-def verifyModuleJson(m):
-    pass
-#    raise ModuleException("some error")
+    def verifyModuleJson(m):
+    # Check if the provided object is an instance of Module
+      if not isinstance(m, Module):
+        raise ModuleException("Invalid module object")
+
+    # Check if the required keys exist in the dictionary
+      if not hasattr(m, 'name') or not hasattr(m, 'description') \
+            or not hasattr(m, 'type') or not hasattr(m, 'implementation'):
+        raise ModuleException("Missing required attributes")
+
+    # Check if the 'type' attribute is a valid ModuleType
+      if m.type not in ModuleType:
+        raise ModuleException("Invalid module type")
+ 
+      pass
+
