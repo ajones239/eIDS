@@ -187,20 +187,15 @@ class CSVImporter(InputParsingModule):
         pass
 
 
-
-
 def verifyModuleJson(m):
-    
     check_keys = {"name", "description", "type", "implementation"}
-    
     for i in check_keys:
-        if i not in m.keys() :
+        if i not in m.keys():
             raise ModuleException("Missing field '" + i + "'")
-     
     try:
         ModuleType(m['type'])
     except ValueError:
-      raise ModuleException("Invalid type value ")
+      raise ModuleException("Invalid type")
 
 
 

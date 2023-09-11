@@ -16,8 +16,5 @@ def addModule():
     except ModuleException as e:
         resp = jsonify({'error': e.message})
         resp.status_code = 400
-    except Exception as e:
-        resp = Response()
-        resp.status_code = 500
     return resp
 
