@@ -1,7 +1,7 @@
 from enum import Enum
 from abc import ABC, abstractmethod
 from queue import Queue
-from threading import Lock
+from threading import RLock
 import numpy as np
 
 
@@ -52,15 +52,15 @@ class Module(ABC):
     def __init__(self):
         super(Module, self).__init__()
 
-        self._id = None
+        self.id = None
         self.name = None
         self.description = None
         self.type = None
         self.implementation = None
         self.data = None
 
-        self._logLock = Lock()
-        self._eventLock = Lock()
+        self._logLock = RLock()
+        self._eventLock = RLock()
         self._logQueues = []
         self._eventQueues = []
 
@@ -115,7 +115,7 @@ class ModuleIO(ABC):
         self.associatedOutputModules = None
 
         self._output = None
-        self._outputLock = Lock()
+        self._outputLock = RLock()
         self._outputQueues = []
 
     def _addOutput(self, output):
@@ -196,6 +196,4 @@ def verifyModuleJson(m):
         ModuleType(m['type'])
     except ValueError:
       raise ModuleException("Invalid type")
-
-
 

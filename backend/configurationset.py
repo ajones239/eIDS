@@ -7,12 +7,10 @@ class ConfigurationSetException(Exception):
 
 class ConfigurationSet:
 
-    def __init__(self) -> None:
-        self._id = None
-        self.name = None
-        self.description = None
-        self.modules = None
+    def __init__(self, json) -> None:
+        self.id = json.get('id')
+        self.name = json.get('name')
+        self.description = json.get('description')
+        self.modules = json.get('modules')
+        self.active = False
 
-
-def verifyConfigurationSetJson(cs):
-    pass

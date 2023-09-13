@@ -29,7 +29,7 @@ def ping():
     "module_io_params": ["to", "be", "added"]
 }''',
     response_model=[
-        (200, 'Success. Returns JSON response. Ex {"id": "3adb6c09-9765-4dbc-9fbd-d860a7e90ab2"}'),
+        (200, 'Success. Returns JSON response. Ex {"id": "64fef75832f055aee44dbc52"}'),
         (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
     ]
 )
@@ -47,8 +47,8 @@ def addModule():
     summary='Add a new configuration set',
     description='''Expects valid JSON request body. Ex)
 {
-    "name": "configuration set name, optional",
-    "description": "description of module configuration set, optional",
+    "name": "configuration set name",
+    "description": "description of module configuration set",
     "modules": [
         {
             "id": "module ID",
@@ -57,7 +57,7 @@ def addModule():
     ]
 }. Modules are run in order of their levels, in increasing order''',
     response_model=[
-        (200, 'Success. Returns JSON response. Ex {"id": "3adb6c09-9765-4dbc-9fbd-d860a7e90ab2"}'),
+        (200, 'Success. Returns JSON response. Ex {"id": "64fef75832f055aee44dbc52"}'),
         (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
     ]
 )
