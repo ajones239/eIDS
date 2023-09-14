@@ -1,30 +1,30 @@
-from modules import *
-from configurationset import *
+import modules
+import configurationset
 
 from threading import RLock
 from bson.objectid import ObjectId
 from pymongo import MongoClient
-import base64
+from base64 import urlsafe_b64decode
 
 dbclient = MongoClient('mongodb://localhost:27017/')
 moduleCollection = dbclient['eIDS']['modules']
 configSetCollection = dbclient['eIDS']['configurations']
 
-modules = dict()
-configurationSets = dict()
+activeModules = dict()
+activeConfigurationSets = dict()
 moduleLock = RLock()
 configSetLock = RLock()
 
 
 def addModule(moduleJson):
-    verifyModuleJson(moduleJson)
+    modules.verifyModuleJson(moduleJson)
     return str(moduleCollection.insert_one(moduleJson).inserted_id)
 
 
 def getModuleJson(id):
     mjson = moduleCollection.find_one({'_id': ObjectId(id)})
     if mjson is None:
-        raise ModuleNotFoundError('Invalid module ID ' + id)
+        raise modules.ModuleException('Invalid module ID ' + id)
     mjson['id'] = id
     mjson.pop('_id')
     return mjson
@@ -32,12 +32,12 @@ def getModuleJson(id):
 
 def loadModule(id):
     mjson = getModuleJson(id)
-    impl = base64.urlsafe_b64decode(mjson['implementation'])
+    impl = urlsafe_b64decode(mjson['implementation'])
     exec(impl, globals())
     globals()[mjson['name']].__module__ = 'modules'
     module = globals()[mjson['name']]()
     with moduleLock:
-        modules[id] = module
+        activeModules[id] = module
     try:
         module.data = mjson['data']
     except KeyError:
@@ -48,24 +48,24 @@ def loadModule(id):
 def getModule(id):
     try:
         with moduleLock:
-            return modules[id]
+            return activeModules[id]
     except KeyError:
         return loadModule(id)
 
 
 def addConfigurationSet(confJson):
     id = str(configSetCollection.insert_one(confJson).inserted_id)
-    confSet = ConfigurationSet(confJson)
+    confSet = configurationset.ConfigurationSet(confJson)
     confSet.id = id
     with configSetLock:
-        configurationSets[confSet.id] = confSet
+        activeConfigurationSets[confSet.id] = confSet
     return str(confSet.id)
 
 
 def getConfigurationSetJson(id):
     configjson = configSetCollection.find_one({'_id': ObjectId(id)})
     if configjson is None:
-        raise ConfigurationSetException('Invalid configuration set ID ' + id)
+        raise configurationset.ConfigurationSetException('Invalid configuration set ID ' + id)
     configjson[id] = id
     configjson.pop('_id')
     return configjson
@@ -73,16 +73,16 @@ def getConfigurationSetJson(id):
 
 def loadConfigurationSet(id):
     configjson = getConfigurationSetJson(id)
-    configSet = ConfigurationSet(configjson)
+    configSet = configurationset.ConfigurationSet(configjson)
     with configSetLock:
-        configurationSets[id] = configSet
+        activeConfigurationSets[id] = configSet
     return configSet
 
 
 def getConfigurationSet(id):
     try:
         with configSetLock:
-            return configurationSets[id]
+            return activeConfigurationSets[id]
     except KeyError:
         return loadConfigurationSet(id)
 
@@ -97,7 +97,7 @@ def startConfigurationSet(id):
     with moduleLock:
         for m in configSet.modules:
             try:
-                loaded.append((modules[m['id']]['id'], m['level']))
+                loaded.append((activeModules[m['id']]['id'], m['level']))
             except KeyError:
                 notLoaded.append(m)
 

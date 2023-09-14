@@ -2,7 +2,6 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from queue import Queue
 from threading import RLock
-import numpy as np
 
 
 class ModuleException(Exception):

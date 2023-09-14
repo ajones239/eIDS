@@ -1,7 +1,8 @@
-from flask import Flask, Response, request, jsonify
-from configurationset import ConfigurationSetException
+import configurationset
 import controlplane
-from modules import ModuleException
+import modules
+
+from flask import Flask, Response, request, jsonify
 from swagger_gen.lib.wrappers import swagger_metadata
 from swagger_gen.swagger import Swagger
 
@@ -46,7 +47,7 @@ def addModule():
     try:
         resp = jsonify({'id': controlplane.addModule(request.get_json())})
         resp.status_code = 200
-    except ModuleException as e:
+    except modules.ModuleException as e:
         resp = jsonify({'error': e.message})
         resp.status_code = 400
     return resp
@@ -103,7 +104,7 @@ def addConfiguration():
     try:
         resp = jsonify({'id': controlplane.addConfigurationSet(request.get_json())})
         resp.status_code = 200
-    except ConfigurationSetException as e:
+    except configurationset.ConfigurationSetException as e:
         resp = jsonify({'error': e.message})
         resp.status_code = 400
     return resp
