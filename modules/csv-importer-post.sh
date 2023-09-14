@@ -12,6 +12,6 @@ curl -v \
                     \"modules\": [\"numpy\"]
                 }
             ],
-            \"implementation\": \"$(cat csv-importer.py | basenc --base64url | tr -d '\n')\"
+            \"implementation\": \"$(basenc --base64url < csv-importer.py | tr -d '\n')\"
         }" \
     http://localhost:5000/module

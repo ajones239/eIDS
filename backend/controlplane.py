@@ -86,7 +86,7 @@ def getConfigurationSet(id):
 def startConfigurationSet(id):
     configSet = getConfigurationSet(id)
     configSet.active = True
-    # sory by level
+    # sort by level
     configSet.modules.sort(key=lambda t: t[1])
     notLoaded = []
     loaded = []
