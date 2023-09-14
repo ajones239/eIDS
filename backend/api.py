@@ -76,6 +76,7 @@ Ex)
     ]
 )
 def getModule(id):
+    controlplane.loadModule(id)
     return jsonify(controlplane.getModuleJson(id))
 
 

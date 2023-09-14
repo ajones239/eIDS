@@ -95,10 +95,10 @@ class Module(ABC):
         pass
 
 
-class ModuleIO(ABC):
+class IOModule(ABC):
 
     def __init__(self):
-        super(ModuleIO, self).__init__()
+        super(IOModule, self).__init__()
 
         self.stream = None
         self.dataFrequency = None
@@ -138,30 +138,18 @@ class ModuleIO(ABC):
         pass
 
 
-class InputParsingModule(Module, ModuleIO):
-
-    def __init__(self):
-        super(InputParsingModule, self).__init__()
-
-
-class ProcessingModule(Module, ModuleIO):
-
-    def __init__(self):
-        super(ProcessingModule, self).__init__()
-
-
-class AnalysisModule(Module, ModuleIO):
-
-    def __init__(self):
-        super(AnalysisModule, self).__init__()
-
-
-class ActionModule(Module):
+class ActionModule(ABC):
 
     def __init__(self):
         super(ActionModule, self).__init__()
 
+    @abstractmethod
+    def doAction(self):
+        pass
 
+    @abstractmethod
+    def addCondition(self, cond):
+        pass
 
 
 def verifyModuleJson(m):
@@ -172,6 +160,6 @@ def verifyModuleJson(m):
     try:
         ModuleType(m['type'])
     except ValueError:
-      raise ModuleException("Invalid type")
+        raise ModuleException("Invalid type")
 
 

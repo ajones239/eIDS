@@ -90,8 +90,6 @@ def getConfigurationSet(id):
 def startConfigurationSet(id):
     configSet = getConfigurationSet(id)
     configSet.active = True
-    # sort by level
-    configSet.modules.sort(key=lambda t: t[1])
     notLoaded = []
     loaded = []
 
@@ -99,16 +97,16 @@ def startConfigurationSet(id):
     with moduleLock:
         for m in configSet.modules:
             try:
-                loaded.append(modules[m['id']]['id'])
+                loaded.append((modules[m['id']]['id'], m['level']))
             except KeyError:
-                notLoaded.append(m['id'])
+                notLoaded.append(m)
 
-    for id in notLoaded:
-        module = loadModule(id)
-        with moduleLock:
-            modules[id] = module
-        loaded.append(id)
+    for m in notLoaded:
+        loadModule(m['id'])
+        loaded.append(m)
 
-    for id in loaded:
-        pass
+    # sort by level
+    configSet.modules.sort(key=lambda t: t[1])
 
+    # for m in configSet.modules:
+    #     spawnWorker(m)
