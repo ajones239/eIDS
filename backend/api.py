@@ -34,7 +34,7 @@ def ping():
         }
     ],
     "implementation": "base64 encoded python file. Should be named <module name>.py",
-    "data": ["JSON array of data, to be used internally by provided implementation"],
+    "data": {"JSON array of data, to be used internally by provided implementation"},
     "module_io_params": ["to", "be", "added"]
 }''',
     response_model=[
@@ -70,7 +70,7 @@ Ex)
         }
     ],
     "implementation": "base64 encoded python file. Should be named <module name>.py",
-    "data": ["JSON array of data, to be used internally by provided implementation"],
+    "data": {"JSON object of data, to be used internally by provided implementation"},
     "module_io_params": ["to", "be", "added"]
 }''')
     ]

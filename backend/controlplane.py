@@ -32,24 +32,29 @@ def getModuleJson(id):
 
 def loadModule(id):
     mjson = getModuleJson(id)
-    impl = base64.urlsafe_b64decode(bytes(mjson['implementation'], 'utf-8'))
-
-    # module = moduleTypeMask[ModuleType(mjson['type'])](mjson)
-    # with moduleLock:
-    #     modules[id] = module
+    impl = base64.urlsafe_b64decode(mjson['implementation'])
+    exec(impl, globals())
+    globals()[mjson['name']].__module__ = 'modules'
+    module = globals()[mjson['name']]()
+    with moduleLock:
+        modules[id] = module
+    try:
+        module.data = mjson['data']
+    except KeyError:
+        pass
+    return module
 
 
 def getModule(id):
     try:
         with moduleLock:
-            module = modules[id]
+            return modules[id]
     except KeyError:
-        module = loadModule(id)
-    return module
+        return loadModule(id)
 
 
 def addConfigurationSet(confJson):
-    id = configSetCollection.insert_one(confJson).inserted_id
+    id = str(configSetCollection.insert_one(confJson).inserted_id)
     confSet = ConfigurationSet(confJson)
     confSet.id = id
     with configSetLock:
@@ -77,10 +82,9 @@ def loadConfigurationSet(id):
 def getConfigurationSet(id):
     try:
         with configSetLock:
-            configSet = configurationSets[id]
+            return configurationSets[id]
     except KeyError:
-        configSet = loadConfigurationSet(id)
-    return configSet
+        return loadConfigurationSet(id)
 
 
 def startConfigurationSet(id):
