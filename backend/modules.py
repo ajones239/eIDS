@@ -162,33 +162,10 @@ class ActionModule(Module):
         super(ActionModule, self).__init__()
 
 
-class CSVImporter(InputParsingModule):
-
-    def __init__(self):
-        super(CSVImporter, self).__init__()
-        self.id = None
-        self.name = 'CSV Importer'
-        self.description = 'A generic input parsing module for parsing CSV files. This module converts the data argument of addInput to a numpy array, assuming all values are data.'
-        self.type = ModuleType.INPUT_PARSING
-        self.implementation = None
-        self.stream = False
-        self.dataFrequency = DataFrequency.ONE_TIME_ACCESS
-
-    def getOutput(self):
-        return self.output
-
-    def addInput(self, data):
-        self.output = np.array(data[0])
-
-    def start(self, data):
-        pass
-
-    def stop(self, data):
-        pass
 
 
 def verifyModuleJson(m):
-    check_keys = {"name", "description", "type", "implementation"}
+    check_keys = {"name", "description", "type", "dependencies", "implementation"}
     for i in check_keys:
         if i not in m.keys():
             raise ModuleException("Missing field '" + i + "'")
@@ -196,4 +173,5 @@ def verifyModuleJson(m):
         ModuleType(m['type'])
     except ValueError:
       raise ModuleException("Invalid type")
+
 
