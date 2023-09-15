@@ -4,7 +4,9 @@ An extensible and modular IDS framework
 ## Backend build instructions
 
 Tested with python 3.11.
+
 Commands assume Linux, may have to adjust for other operating systems
+
 Also assumes `eIDS/backend` as working directory
 
 - optional: use python virtual environment to install dependencies
