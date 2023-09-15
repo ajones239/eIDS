@@ -14,3 +14,4 @@ class ConfigurationSet:
         self.modules = json.get('modules')
         self.active = False
 
+

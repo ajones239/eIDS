@@ -36,6 +36,8 @@ def loadModule(id):
     exec(impl, globals())
     globals()[mjson['name']].__module__ = 'modules'
     module = globals()[mjson['name']]()
+    print(type(module))
+    print(isinstance(module, modules.Module))
     with moduleLock:
         activeModules[id] = module
     try:
