@@ -86,11 +86,11 @@ class Module(ABC):
                 q.put(event)
 
     @abstractmethod
-    def stop(self, data):
+    def stop(self):
         pass
 
     @abstractmethod
-    def start(self, data):
+    def start(self):
         pass
 
 

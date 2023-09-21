@@ -12,8 +12,11 @@ configSetCollection = dbclient['eIDS']['configurations']
 
 activeModules = dict()
 activeConfigurationSets = dict()
+activeWorkers = dict()
+
 moduleLock = RLock()
 configSetLock = RLock()
+workerLock = RLock()
 
 
 def addModule(moduleJson):
@@ -87,6 +90,12 @@ def getConfigurationSet(id):
         return loadConfigurationSet(id)
 
 
+def spawnWorker(id):
+    with moduleLock:
+        module = activeModules[i]
+
+
+
 def startConfigurationSet(id):
     configSet = getConfigurationSet(id)
     configSet.active = True
@@ -108,5 +117,5 @@ def startConfigurationSet(id):
     # sort by level
     configSet.modules.sort(key=lambda t: t[1])
 
-    # for m in configSet.modules:
-    #     spawnWorker(m)
+    for m in configSet.modules:
+        spawnWorker(m[1])

@@ -29,10 +29,7 @@ def ping():
     "description": "description of module",
     "type": 1,
     "dependencies": [
-        {
-            "package": "package that can be installed with `pip install package`, should be eIDS for custom modules",
-            "modules": ["modules that can be imported with `import module`"]
-        }
+        "array of packages that can be installed with `pip install package`"
     ],
     "implementation": "base64 encoded python file. Should be named <module name>.py",
     "data": {"JSON array of data, to be used internally by provided implementation"},
@@ -65,10 +62,7 @@ Ex)
     "description": "description of module",
     "type": 1,
     "dependencies": [
-        {
-            "package": "package that can be installed with `pip install package`, should be eIDS for custom modules",
-            "modules": ["modules that can be imported with `import module`"]
-        }
+        "array of packages that can be installed with `pip install package`"
     ],
     "implementation": "base64 encoded python file. Should be named <module name>.py",
     "data": {"JSON object of data, to be used internally by provided implementation"},

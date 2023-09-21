@@ -1,9 +1,7 @@
-import numpy
-
-class CSVImporter(modules.Module, modules.IOModule):
+class DummyProcessing(modules.Module, modules.IOModule):
 
     def __init__(self):
-        super(CSVImporter, self).__init__()
+        super(DummyProcessing, self).__init__()
         self.stream = False
         self.dataFrequency = modules.DataFrequency.ONE_TIME_ACCESS
 
@@ -11,7 +9,8 @@ class CSVImporter(modules.Module, modules.IOModule):
         return self.output
 
     def addInput(self, data):
-        self.output = numpy.array(data[0])
+        self.output = data
+        print('Number of columns in numpy array: ', len(data))
 
     def start(self):
         pass
