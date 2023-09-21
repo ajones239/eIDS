@@ -36,8 +36,6 @@ def loadModule(id):
     exec(impl, globals())
     globals()[mjson['name']].__module__ = 'modules'
     module = globals()[mjson['name']]()
-    print(type(module))
-    print(isinstance(module, modules.Module))
     with moduleLock:
         activeModules[id] = module
     try:
@@ -99,7 +97,7 @@ def startConfigurationSet(id):
     with moduleLock:
         for m in configSet.modules:
             try:
-                loaded.append((activeModules[m['id']]['id'], m['level']))
+                loaded.append((activeModules[m['id']].id, m['level']))
             except KeyError:
                 notLoaded.append(m)
 

@@ -77,8 +77,13 @@ Ex)
     ]
 )
 def getModule(id):
-    controlplane.loadModule(id)
-    return jsonify(controlplane.getModuleJson(id))
+    try:
+        resp = jsonify(controlplane.getModuleJson(id))
+    except modules.ModuleException as e:
+        print(e)
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+    return resp
 
 
 @api.route('/configuration', methods=['POST'])
