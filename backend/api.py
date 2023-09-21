@@ -112,7 +112,7 @@ def addConfiguration():
 @api.route('/configuration/<id>', methods=['GET'])
 @swagger_metadata(
     summary='Get a configuration set',
-    description='Returns confi set with the given ID.',
+    description='Returns config set with the given ID.',
     response_model=[
         (200, '''Success. Returns JSON response. Ex)
 {
@@ -124,12 +124,30 @@ def addConfiguration():
             "level": 0
         }
     ]
-}'''),
-        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+}''')
     ]
 )
 def getConfiguration(id):
     return jsonify(controlplane.getConfigurationSetJson(id))
+
+
+@api.route('/configuration/<id>', methods=['POST'])
+@swagger_metadata(
+    summary='Start a configuration set (runs all modules in set)',
+    description='Starts all modules in a configuration set.',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def startConfigurationSet(id):
+    try:
+        controlplane.startConfigurationSet(id)
+        return Response(status=204)
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
 
 
 swagger = Swagger(

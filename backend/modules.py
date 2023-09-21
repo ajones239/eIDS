@@ -116,6 +116,7 @@ class IOModule(ABC):
         self._output = None
         self._outputLock = RLock()
         self._outputQueues = []
+        self._hasOutput = False
 
     def _addOutput(self, output):
         with self._outputLock:
@@ -128,9 +129,24 @@ class IOModule(ABC):
             self._outputQueues.append(q)
         return q
 
-    @abstractmethod
+    def setOutput(self, data):
+        if self.stream:
+            self._addOutput(data)
+        else:
+            with self._outputLock:
+                self._output = data
+
+    def getOutputData(self):
+        with self._outputLock:
+            return self._output
+
+    def setHasOuput(self, flag):
+        with self._outputLock:
+            self._hasOutput = flag
+
     def hasOutput(self):
-        pass
+        with self._outputLock:
+            return self._hasOutput
 
     @abstractmethod
     def addInput(self, data):

@@ -8,16 +8,14 @@ class CSVImporter(modules.Module, modules.IOModule):
         self.dataFrequency = modules.DataFrequency.ONE_TIME_ACCESS
 
     def getOutput(self):
-        return self._output
+        return self.getOutputData()
 
     def addInput(self, data):
-        self._output = numpy.array(data[0])
+        self.setOutput(numpy.array(data[0]))
+        self.setHasOutput(True)
 
     def start(self):
         pass
 
     def stop(self):
         pass
-
-    def hasOutput(self):
-        return self._output is not None

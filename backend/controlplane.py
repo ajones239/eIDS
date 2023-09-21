@@ -26,6 +26,7 @@ def addModule(moduleJson):
 
 
 def getModuleJson(id):
+    print(id)
     mjson = moduleCollection.find_one({'_id': ObjectId(id)})
     if mjson is None:
         raise modules.ModuleException('Invalid module ID ' + id)
@@ -110,7 +111,7 @@ def startConfigurationSet(id):
         loaded.append(m)
 
     # sort by level
-    configSet.modules.sort(key=lambda t: t[1])
+    configSet.modules.sort(key=lambda t: t['level'])
 
     for m in configSet.modules:
         with moduleLock:
