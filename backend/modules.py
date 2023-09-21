@@ -129,6 +129,10 @@ class IOModule(ABC):
         return q
 
     @abstractmethod
+    def hasOutput(self):
+        pass
+
+    @abstractmethod
     def addInput(self, data):
         pass
 

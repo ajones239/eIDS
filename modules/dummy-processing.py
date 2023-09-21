@@ -6,10 +6,10 @@ class DummyProcessing(modules.Module, modules.IOModule):
         self.dataFrequency = modules.DataFrequency.ONE_TIME_ACCESS
 
     def getOutput(self):
-        return self.output
+        return self._output
 
     def addInput(self, data):
-        self.output = data
+        self._output = data
         print('Number of columns in numpy array: ', len(data))
 
     def start(self):
@@ -17,3 +17,6 @@ class DummyProcessing(modules.Module, modules.IOModule):
 
     def stop(self):
         pass
+
+    def hasOutput(self):
+        return self._output is not None

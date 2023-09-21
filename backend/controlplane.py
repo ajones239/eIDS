@@ -1,5 +1,6 @@
 import modules
 import configurationset
+import worker
 
 from threading import RLock
 from bson.objectid import ObjectId
@@ -90,12 +91,6 @@ def getConfigurationSet(id):
         return loadConfigurationSet(id)
 
 
-def spawnWorker(id):
-    with moduleLock:
-        module = activeModules[i]
-
-
-
 def startConfigurationSet(id):
     configSet = getConfigurationSet(id)
     configSet.active = True
@@ -118,4 +113,7 @@ def startConfigurationSet(id):
     configSet.modules.sort(key=lambda t: t[1])
 
     for m in configSet.modules:
-        spawnWorker(m[1])
+        with moduleLock:
+            module = activeModules[m['id']]
+        w = worker.Worker(module)
+        w.start()

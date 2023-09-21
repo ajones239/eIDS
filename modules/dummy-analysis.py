@@ -17,3 +17,6 @@ class DummyAnalysis(modules.Module, modules.IOModule):
 
     def stop(self):
         pass
+
+    def hasOutput(self):
+        return self._output is not None
