@@ -26,7 +26,6 @@ def addModule(moduleJson):
 
 
 def getModuleJson(id):
-    print(id)
     mjson = moduleCollection.find_one({'_id': ObjectId(id)})
     if mjson is None:
         raise modules.ModuleException('Invalid module ID ' + id)
