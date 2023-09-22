@@ -1,10 +1,7 @@
-import numpy
-from base64 import urlsafe_b64decode
-
-class CSVImporter(modules.Module, modules.IOModule):
+class DummyProcessing(modules.Module, modules.IOModule):
 
     def __init__(self):
-        super(CSVImporter, self).__init__()
+        super(DummyProcessing, self).__init__()
         self.stream = False
         self.dataFrequency = modules.DataFrequency.ONE_TIME_ACCESS
 
@@ -12,8 +9,9 @@ class CSVImporter(modules.Module, modules.IOModule):
         return self.getOutputData()
 
     def addInput(self, data):
-        self.setOutput(numpy.array(urlsafe_b64decode(data)))
+        self.setOutput(data)
         self.setHasOutput(True)
+        print('Number of columns in numpy array: ', len(data))
 
     def start(self):
         pass

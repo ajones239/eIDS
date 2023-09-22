@@ -29,10 +29,7 @@ def ping():
     "description": "description of module",
     "type": 1,
     "dependencies": [
-        {
-            "package": "package that can be installed with `pip install package`, should be eIDS for custom modules",
-            "modules": ["modules that can be imported with `import module`"]
-        }
+        "array of packages that can be installed with `pip install package`"
     ],
     "implementation": "base64 encoded python file. Should be named <module name>.py",
     "data": {"JSON array of data, to be used internally by provided implementation"},
@@ -65,10 +62,7 @@ Ex)
     "description": "description of module",
     "type": 1,
     "dependencies": [
-        {
-            "package": "package that can be installed with `pip install package`, should be eIDS for custom modules",
-            "modules": ["modules that can be imported with `import module`"]
-        }
+        "array of packages that can be installed with `pip install package`"
     ],
     "implementation": "base64 encoded python file. Should be named <module name>.py",
     "data": {"JSON object of data, to be used internally by provided implementation"},
@@ -77,8 +71,13 @@ Ex)
     ]
 )
 def getModule(id):
-    controlplane.loadModule(id)
-    return jsonify(controlplane.getModuleJson(id))
+    try:
+        resp = jsonify(controlplane.getModuleJson(id))
+    except modules.ModuleException as e:
+        print(e)
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+    return resp
 
 
 @api.route('/configuration', methods=['POST'])
@@ -141,7 +140,7 @@ def addConfiguration():
 @api.route('/configuration/<id>', methods=['GET'])
 @swagger_metadata(
     summary='Get a configuration set',
-    description='Returns confi set with the given ID.',
+    description='Returns config set with the given ID.',
     response_model=[
         (200, '''Success. Returns JSON response. Ex)
 {
@@ -153,12 +152,50 @@ def addConfiguration():
             "level": 0
         }
     ]
-}'''),
-        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+}''')
     ]
 )
 def getConfiguration(id):
     return jsonify(controlplane.getConfigurationSetJson(id))
+
+
+@api.route('/configuration/<id>', methods=['POST'])
+@swagger_metadata(
+    summary='Start a configuration set (runs all modules in set)',
+    description='Starts all modules in a configuration set.',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def startConfigurationSet(id):
+    try:
+        controlplane.startConfigurationSet(id)
+        return Response(status=204)
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+
+
+@api.route('/module/<id>/input/<data>', methods=['POST'])
+@swagger_metadata(
+    summary='Add input to a module',
+    description='Inputs a base64 encoded string to the module with the given ID',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def addInputToModule(id, data):
+    try:
+        module = controlplane.getModuleWithException(id)
+    except modules.ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+    module.addInput(data)
+    return Response(status=204)
 
 
 swagger = Swagger(

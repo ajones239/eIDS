@@ -1,22 +1,21 @@
-import numpy
-from base64 import urlsafe_b64decode
-
-class CSVImporter(modules.Module, modules.IOModule):
+class DummyAnalysis(modules.Module, modules.IOModule):
 
     def __init__(self):
-        super(CSVImporter, self).__init__()
+        super(DummyAnalysis, self).__init__()
         self.stream = False
         self.dataFrequency = modules.DataFrequency.ONE_TIME_ACCESS
 
     def getOutput(self):
-        return self.getOutputData()
+        return 'some output'
 
     def addInput(self, data):
-        self.setOutput(numpy.array(urlsafe_b64decode(data)))
         self.setHasOutput(True)
+        print('DummyAnalysis receiving data')
+        pass
 
     def start(self):
         pass
 
     def stop(self):
         pass
+

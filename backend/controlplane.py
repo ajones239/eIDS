@@ -1,5 +1,6 @@
 import modules
 import configurationset
+import worker
 
 from threading import RLock
 from bson.objectid import ObjectId
@@ -12,8 +13,11 @@ configSetCollection = dbclient['eIDS']['configurations']
 
 activeModules = dict()
 activeConfigurationSets = dict()
+activeWorkers = dict()
+
 moduleLock = RLock()
 configSetLock = RLock()
+workerLock = RLock()
 
 
 def addModule(moduleJson):
@@ -36,8 +40,6 @@ def loadModule(id):
     exec(impl, globals())
     globals()[mjson['name']].__module__ = 'modules'
     module = globals()[mjson['name']]()
-    print(type(module))
-    print(isinstance(module, modules.Module))
     with moduleLock:
         activeModules[id] = module
     try:
@@ -45,6 +47,14 @@ def loadModule(id):
     except KeyError:
         pass
     return module
+
+
+def getModuleWithException(id):
+    try:
+        with moduleLock:
+            return activeModules[id]
+    except KeyError:
+        raise modules.ModuleException('No module loaded with ID: ' + id)
 
 
 def getModule(id):
@@ -99,7 +109,7 @@ def startConfigurationSet(id):
     with moduleLock:
         for m in configSet.modules:
             try:
-                loaded.append((activeModules[m['id']]['id'], m['level']))
+                loaded.append((activeModules[m['id']].id, m['level']))
             except KeyError:
                 notLoaded.append(m)
 
@@ -108,7 +118,10 @@ def startConfigurationSet(id):
         loaded.append(m)
 
     # sort by level
-    configSet.modules.sort(key=lambda t: t[1])
+    configSet.modules.sort(key=lambda t: t['level'])
 
-    # for m in configSet.modules:
-    #     spawnWorker(m)
+    for m in configSet.modules:
+        with moduleLock:
+            module = activeModules[m['id']]
+        w = worker.Worker(module)
+        w.start()

@@ -86,11 +86,11 @@ class Module(ABC):
                 q.put(event)
 
     @abstractmethod
-    def stop(self, data):
+    def stop(self):
         pass
 
     @abstractmethod
-    def start(self, data):
+    def start(self):
         pass
 
 
@@ -116,6 +116,7 @@ class IOModule(ABC):
         self._output = None
         self._outputLock = RLock()
         self._outputQueues = []
+        self._hasOutput = False
 
     def _addOutput(self, output):
         with self._outputLock:
@@ -127,6 +128,25 @@ class IOModule(ABC):
         with self._outputLock:
             self._outputQueues.append(q)
         return q
+
+    def setOutput(self, data):
+        if self.stream:
+            self._addOutput(data)
+        else:
+            with self._outputLock:
+                self._output = data
+
+    def getOutputData(self):
+        with self._outputLock:
+            return self._output
+
+    def setHasOutput(self, flag):
+        with self._outputLock:
+            self._hasOutput = flag
+
+    def hasOutput(self):
+        with self._outputLock:
+            return self._hasOutput
 
     @abstractmethod
     def addInput(self, data):
