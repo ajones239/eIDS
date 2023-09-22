@@ -80,6 +80,30 @@ def getModule(id):
     return resp
 
 
+@api.route('/module', methods=['GET'])
+@swagger_metadata(
+    summary='Get all the modules',
+    description='Returns all modules',
+    response_model=[
+        (200, '''Success. Returns JSON response. Ex)
+Ex)
+[{
+    "name": "module name, should be name of custom module class, case insensitive",
+    "description": "description of module",
+    "type": 1,
+    "dependencies": [
+        "array of packages that can be installed with `pip install package`"
+    ],
+    "implementation": "base64 encoded python file. Should be named <module name>.py",
+    "data": {"JSON object of data, to be used internally by provided implementation"},
+    "module_io_params": ["to", "be", "added"]
+}]''')
+    ]
+)
+def getAllModules():
+    return jsonify(controlplane.getAllModulesJson())
+
+
 @api.route('/configuration', methods=['POST'])
 @swagger_metadata(
     summary='Add a new configuration set',

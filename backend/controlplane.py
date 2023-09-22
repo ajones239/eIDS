@@ -63,6 +63,16 @@ def getModule(id):
             return activeModules[id]
     except KeyError:
         return loadModule(id)
+    
+def getAllModulesJson():
+     cursor = moduleCollection.find({})
+     results=[]
+     for document in cursor:
+         document['id'] = str(document["_id"])
+         document.pop('_id')
+         results.append(document)
+         print(type(document["id"]))
+     return results
 
 
 def addConfigurationSet(confJson):
