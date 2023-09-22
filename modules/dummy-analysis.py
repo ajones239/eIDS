@@ -8,7 +8,7 @@ class DummyAnalysis(modules.Module, modules.IOModule):
     def getOutput(self):
         return 'some output'
 
-    def addInput(self, data):
+    def addInput(self, moduleId, data):
         self.setHasOutput(True)
         print('DummyAnalysis receiving data')
         pass

@@ -31,6 +31,7 @@ def getModuleJson(id):
         raise modules.ModuleException('Invalid module ID ' + id)
     mjson['id'] = id
     mjson.pop('_id')
+    print(type(mjson['id']))
     return mjson
 
 

@@ -2,6 +2,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from queue import Queue
 from threading import RLock
+import controlplane
 
 
 class ModuleException(Exception):
@@ -148,8 +149,11 @@ class IOModule(ABC):
         with self._outputLock:
             return self._hasOutput
 
+    def findModule(self, moduleId):
+        return controlplane.getModule(moduleId)
+
     @abstractmethod
-    def addInput(self, data):
+    def addInput(self, moduleId, data):
         pass
 
     @abstractmethod

@@ -166,7 +166,7 @@ def addInputToModule(id, data):
         resp = jsonify({'error': e.message})
         resp.status_code = 400
         return resp
-    module.addInput(data)
+    module.addInput('', data)
     return Response(status=204)
 
 
