@@ -12,90 +12,110 @@ import warnings
 warnings.filterwarnings("ignore")
 
 #Imports
-import pandas as pd
+# import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report, confusion_matrix
 import joblib
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+from base64 import urlsafe_b64decode
 
-def evaluate_stacking_model(data_file, stack_model_file, xg_model_file, rf_model_file, et_model_file, dt_model_file):
+class EnsembleAnalysis(modules.Module, modules.IOModule):
 
-    #mount drive
-    from google.colab import drive
-    drive.mount('/content/drive')
+    def __init__(self):
+        super(EnsembleAnalysis, self).__init__()
+        self.stream = False
 
-    # Load the data
-    df = pd.read_csv(data_file)
+    def getOutput(self):
+        return self.getOutputData()
 
-    # Z-score normalization
-    features = df.dtypes[df.dtypes != 'object'].index
-    df[features] = df[features].apply(lambda x: (x - x.mean()) / x.std())
+    def addInput(self, moduleId, data):
+        self.evaluate_stacking_model(data,
+                                self.getTempFile('stack.pkl'),
+                                self.getTempFile('rf_hpo.pkl'),
+                                self.getTempFile('xg_hpo.pkl'),
+                                self.getTempFile('rf_hpo.pkl'),
+                                self.getTempFile('et_hpo.pkl'),
+                                self.getTempFile('dt_hpo.pkl'))
 
-    # Fill empty values with 0
-    df = df.fillna(0)
+    def start(self):
+        # assumes data is {'filename', 'data'}
+        # and that filenames are 'dt_hpo.pkl', 'et_hpo.pkl',
+        # 'rf_hpo.pkl', 'stack.pkl', and 'xg_hpo.pkl'
+        for k in self.data.keys():
+            self.addTempFile(k, urlsafe_b64decode(self.data[k]))
 
-    # Encode labels
-    labelencoder = LabelEncoder()
-    df.iloc[:, -1] = labelencoder.fit_transform(df.iloc[:, -1])
+    def stop(self):
+        for k in self.data.keys():
+            self.deleteTempFile(k)
 
-    # Get X and y
-    X = df.drop(['Label'], axis=1).values
-    y = df.iloc[:, -1].values.reshape(-1, 1)
-    y = np.ravel(y)
+    def evaluate_stacking_model(self, data, stack_model_file, xg_model_file,
+                                rf_model_file, et_model_file, dt_model_file):
 
-    # Load models
-    stack = joblib.load(stack_model_file)
-    xg = joblib.load(xg_model_file)
-    rf = joblib.load(rf_model_file)
-    et = joblib.load(et_model_file)
-    dt = joblib.load(dt_model_file)
+        # Load the data
+        df = data
 
-    # Fit models
-    dt.fit(X, y)
-    et.fit(X, y)
-    rf.fit(X, y)
-    xg = xg.fit(X, y)
+        # Z-score normalization
+        features = df.dtypes[df.dtypes != 'object'].index
+        df[features] = df[features].apply(lambda x: (x - x.mean()) / x.std())
 
-    # Make predictions
-    dt_test = dt.predict(X)
-    et_test = et.predict(X)
-    rf_test = rf.predict(X)
-    xg_test = xg.predict(X)
+        # Fill empty values with 0
+        df = df.fillna(0)
 
-    # Reshape predictions
-    dt_test = dt_test.reshape(-1, 1)
-    et_test = et_test.reshape(-1, 1)
-    rf_test = rf_test.reshape(-1, 1)
-    xg_test = xg_test.reshape(-1, 1)
+        # Encode labels
+        labelencoder = LabelEncoder()
+        df.iloc[:, -1] = labelencoder.fit_transform(df.iloc[:, -1])
 
-    # Stack predictions
-    stk_test = np.concatenate((dt_test, et_test, rf_test, xg_test), axis=1)
+        # Get X and y
+        X = df.drop(['Label'], axis=1).values
+        y = df.iloc[:, -1].values.reshape(-1, 1)
+        y = np.ravel(y)
 
-    # Make final prediction with stacking model
-    y_predict = stack.predict(stk_test)
-    y_true = y
+        # Load models
+        stack = joblib.load(stack_model_file)
+        xg = joblib.load(xg_model_file)
+        rf = joblib.load(rf_model_file)
+        et = joblib.load(et_model_file)
+        dt = joblib.load(dt_model_file)
 
-    # Calculate and print evaluation metrics
-    stk_score = accuracy_score(y_true, y_predict)
-    print('Accuracy of Stacking: ' + str(stk_score))
-    precision, recall, fscore, none = precision_recall_fscore_support(y_true, y_predict, average='weighted')
-    print('Precision of Stacking: ' + str(precision))
-    print('Recall of Stacking: ' + str(recall))
-    print('F1-score of Stacking: ' + str(fscore))
-    print(classification_report(y_true, y_predict))
-    cm = confusion_matrix(y_true, y_predict)
-    f, ax = plt.subplots(figsize=(5, 5))
-    sns.heatmap(cm, annot=True, linewidth=0.5, linecolor="red", fmt=".0f", ax=ax)
-    plt.xlabel("y_pred")
-    plt.ylabel("y_true")
-    plt.show()
+        # Fit models
+        dt.fit(X, y)
+        et.fit(X, y)
+        rf.fit(X, y)
+        xg = xg.fit(X, y)
 
-# Usage example
-evaluate_stacking_model("/content/drive/MyDrive/Master's project stuff/datasets/CICIDS2017_sample_km.csv",
-                        "/content/drive/MyDrive/Master's project stuff/SavedModels/stack.pkl",
-                        "/content/drive/MyDrive/Master's project stuff/SavedModels/xg_hpo.pkl",
-                        "/content/drive/MyDrive/Master's project stuff/SavedModels/rf_hpo.pkl",
-                        "/content/drive/MyDrive/Master's project stuff/SavedModels/et_hpo.pkl",
-                        "/content/drive/MyDrive/Master's project stuff/SavedModels/dt_hpo.pkl")
+        # Make predictions
+        dt_test = dt.predict(X)
+        et_test = et.predict(X)
+        rf_test = rf.predict(X)
+        xg_test = xg.predict(X)
+
+        # Reshape predictions
+        dt_test = dt_test.reshape(-1, 1)
+        et_test = et_test.reshape(-1, 1)
+        rf_test = rf_test.reshape(-1, 1)
+        xg_test = xg_test.reshape(-1, 1)
+
+        # Stack predictions
+        stk_test = np.concatenate((dt_test, et_test, rf_test, xg_test), axis=1)
+
+        # Make final prediction with stacking model
+        y_predict = stack.predict(stk_test)
+        y_true = y
+
+        # Calculate and print evaluation metrics
+        stk_score = accuracy_score(y_true, y_predict)
+        print('Accuracy of Stacking: ' + str(stk_score))
+        precision, recall, fscore, none = precision_recall_fscore_support(y_true, y_predict, average='weighted')
+        print('Precision of Stacking: ' + str(precision))
+        print('Recall of Stacking: ' + str(recall))
+        print('F1-score of Stacking: ' + str(fscore))
+        print(classification_report(y_true, y_predict))
+        # cm = confusion_matrix(y_true, y_predict)
+        # f, ax = plt.subplots(figsize=(5, 5))
+        # sns.heatmap(cm, annot=True, linewidth=0.5, linecolor="red", fmt=".0f", ax=ax)
+        # plt.xlabel("y_pred")
+        # plt.ylabel("y_true")
+        # plt.show()
+

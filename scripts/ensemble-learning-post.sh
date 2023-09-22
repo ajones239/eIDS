@@ -19,13 +19,13 @@ echo "{
             \"xg_hpo.pkl\": \"$(basenc --base64url < ../models/xg_hpo.pkl | tr -d '\n')\",
             \"stack.pkl\": \"$(basenc --base64url < ../models/stack.pkl | tr -d '\n')\"
         }
-    }" > ensemble_analysis_datafile.json
+    }" > /tmp/ensemble_analysis_datafile.json
 
 curl \
     -H "Content-Type: application/json" \
-    -d @ensemble_analysis_datafile.json \
+    -d @/tmp/ensemble_analysis_datafile.json \
     http://localhost:5000/module 2> /dev/null | jq .id | sed 's/"//g'
 
-rm ensemble_analysis_datafile.json
+rm /tmp/ensemble_analysis_datafile.json
 
 popd >/dev/null

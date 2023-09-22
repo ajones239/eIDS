@@ -2,6 +2,8 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from queue import Queue
 from threading import RLock
+import os
+import tempfile
 import controlplane
 
 
@@ -80,6 +82,26 @@ class Module(ABC):
         with self._eventLock:
             self._eventQueues.append(q)
         return q
+
+    def addTempFile(self, name, data):
+        path = os.path.join(tempfile.gettempdir(), 'eIDS', self.id)
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        with open(os.path.join(path, name), 'wb') as f:
+            f.write(data)
+
+    def getTempFile(self, name):
+        path = os.path.join(tempfile.gettempdir(), 'eIDS', self.id, name)
+        if not os.path.isfile(path):
+            return None
+        with open(path, 'rb') as f:
+            return f.read()
+
+    def getTempFilePath(self, name):
+        return os.path.join(tempfile.gettempdir(), 'eIDS', self.id, name)
+
+    def deleteTempFile(self, name):
+        os.remove(os.path.join(tempfile.gettempdir(), 'eIDS', self.id, name))
 
     def _addEvent(self, event):
         with self._eventLock:
