@@ -140,7 +140,7 @@ class IOModule(ABC):
         with self._outputLock:
             return self._output
 
-    def setHasOuput(self, flag):
+    def setHasOutput(self, flag):
         with self._outputLock:
             self._hasOutput = flag
 

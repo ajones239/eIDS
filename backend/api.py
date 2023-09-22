@@ -150,6 +150,26 @@ def startConfigurationSet(id):
         return resp
 
 
+@api.route('/module/<id>/input/<data>', methods=['POST'])
+@swagger_metadata(
+    summary='Add input to a module',
+    description='Inputs a base64 encoded string to the module with the given ID',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def addInputToModule(id, data):
+    try:
+        module = controlplane.getModuleWithException(id)
+    except modules.ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+    module.addInput(data)
+    return Response(status=204)
+
+
 swagger = Swagger(
     app=api,
     title='eIDS backend API',

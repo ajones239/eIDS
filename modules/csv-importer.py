@@ -1,4 +1,5 @@
 import numpy
+from base64 import urlsafe_b64decode
 
 class CSVImporter(modules.Module, modules.IOModule):
 
@@ -11,7 +12,7 @@ class CSVImporter(modules.Module, modules.IOModule):
         return self.getOutputData()
 
     def addInput(self, data):
-        self.setOutput(numpy.array(data[0]))
+        self.setOutput(numpy.array(urlsafe_b64decode(data)))
         self.setHasOutput(True)
 
     def start(self):

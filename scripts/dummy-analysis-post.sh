@@ -2,7 +2,7 @@
 #
 pushd ../modules >/dev/null || exit
 
-curl -v \
+curl \
     -H "Content-Type: application/json" \
     -d "{
             \"name\": \"DummyAnalysis\",

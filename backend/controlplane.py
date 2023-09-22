@@ -50,6 +50,14 @@ def loadModule(id):
     return module
 
 
+def getModuleWithException(id):
+    try:
+        with moduleLock:
+            return activeModules[id]
+    except KeyError:
+        raise modules.ModuleException('No module loaded with ID: ' + id)
+
+
 def getModule(id):
     try:
         with moduleLock:
