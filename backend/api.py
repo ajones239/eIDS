@@ -3,12 +3,13 @@ import controlplane
 import modules
 
 from flask import Flask, Response, request, jsonify
+from flask_cors import CORS
 from swagger_gen.lib.wrappers import swagger_metadata
 from swagger_gen.swagger import Swagger
 
 
 api = Flask(__name__)
-
+CORS(api)
 
 @api.route('/health', methods=['POST', 'PUT', 'PATCH', 'GET', 'DELETE'])
 @swagger_metadata(
