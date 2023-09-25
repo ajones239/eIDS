@@ -10,6 +10,7 @@ import importlib.util
 import subprocess
 import sys
 
+
 dbclient = MongoClient('mongodb://localhost:27017/')
 moduleCollection = dbclient['eIDS']['modules']
 configSetCollection = dbclient['eIDS']['configurations']
@@ -70,16 +71,16 @@ def getModule(id):
             return activeModules[id]
     except KeyError:
         return loadModule(id)
-    
+
+
 def getAllModulesJson():
-     cursor = moduleCollection.find({})
-     results=[]
-     for document in cursor:
-         document['id'] = str(document["_id"])
-         document.pop('_id')
-         results.append(document)
-         print(type(document["id"]))
-     return results
+    cursor = moduleCollection.find({})
+    results = []
+    for document in cursor:
+        document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    return results
 
 
 def addConfigurationSet(confJson):

@@ -86,7 +86,6 @@ def getModule(id):
     description='Returns all modules',
     response_model=[
         (200, '''Success. Returns JSON response. Ex)
-Ex)
 [{
     "name": "module name, should be name of custom module class, case insensitive",
     "description": "description of module",
