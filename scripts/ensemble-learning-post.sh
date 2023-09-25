@@ -7,7 +7,7 @@ echo "{
         \"description\": \"An ensemble-based analys module. More description goes here...\",
         \"type\": 3,
         \"dependencies\": [
-            \"sklearn\",
+            \"scikit-learn\",
             \"joblib\",
             \"numpy\"
         ],
