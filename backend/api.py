@@ -73,11 +73,7 @@ Ex)
 def getModule(id):
     try:
         resp = jsonify(controlplane.getModuleJson(id))
-        m = controlplane.getModule(id)
-        print(m.data)
-        print(type(m))
     except modules.ModuleException as e:
-        print(e)
         resp = jsonify({'error': e.message})
         resp.status_code = 400
     return resp
