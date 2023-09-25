@@ -100,34 +100,6 @@ def getModule(id):
         (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
     ]
 )
-
-# def getModule(id):
-#     controlplane.loadModule(id)
-#     return jsonify(controlplane.getModuleJson(id))
-
-
-# @api.route('/configuration', methods=['GET'])
-# @swagger_metadata(
-#     summary='Add a new configuration set',
-#     description='''Expects valid JSON request body. Ex)
-# {
-#     "name": "configuration set name",
-#     "description": "description of module configuration set",
-#     "modules": [
-#         {
-#             "id": "module ID",
-#             "level": 0
-#         }
-#     ]
-# }. Modules are run in order of their levels, in increasing order''',
-#     response_model=[
-#         (200,
-#          'Success. Returns JSON response. Ex {"id": "64fef75832f055aee44dbc52"}'),
-#         (400,
-#          'Invalid request. Returns JSON response. Ex {"error": "error message"}')
-#     ]
-# )
-
 def addConfiguration():
     try:
         resp = jsonify({'id': controlplane.addConfigurationSet(request.get_json())})
