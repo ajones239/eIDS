@@ -1,4 +1,4 @@
-import numpy
+import pandas
 from base64 import urlsafe_b64decode
 
 class CSVImporter(modules.Module, modules.IOModule):
@@ -12,8 +12,9 @@ class CSVImporter(modules.Module, modules.IOModule):
         return self.getOutputData()
 
     def addInput(self, moduleId, data):
-        self.setOutput(numpy.array(urlsafe_b64decode(data)))
-        self.setHasOutput(True)
+        self.addTempFile('csv-data', urlsafe_b64decode(data))
+        print("adding input")
+        self.setOutput(pandas.read_csv(self.getTempFilePath('csv-data')))
 
     def start(self):
         pass

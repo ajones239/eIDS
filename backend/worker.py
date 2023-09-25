@@ -1,4 +1,7 @@
+import controlplane
+
 from threading import RLock, Thread
+import time
 
 
 class Worker(Thread):
@@ -11,11 +14,27 @@ class Worker(Thread):
 
     def run(self):
         self.module.start()
+
+        try:
+            while True:
+                self.module.associatedOutputModules.remove(None)
+        except ValueError:
+            pass
+        try:
+            while True:
+                self.module.associatedInputModules.remove(None)
+        except ValueError:
+            pass
+
         while True:
             with self.lock:
                 if not self.active:
                     break
-            pass
+            if self.module.hasOutput():
+                for m in self.module.associatedOutputModules:
+                    mod = controlplane.getModule(m)
+                    mod.addInput(self.module.id, self.module.getOutput())
+            time.sleep(1)
         self.module.stop()
 
     def stop(self):

@@ -10,8 +10,8 @@ class DummyProcessing(modules.Module, modules.IOModule):
 
     def addInput(self, moduleId, data):
         self.setOutput(data)
-        self.setHasOutput(True)
-        print('Number of columns in numpy array: ', len(data))
+        print(type(data))
+        print('Got data: ', data)
 
     def start(self):
         pass

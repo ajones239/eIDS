@@ -38,7 +38,6 @@ def getModuleJson(id):
         raise modules.ModuleException('Invalid module ID ' + id)
     mjson['id'] = id
     mjson.pop('_id')
-    print(type(mjson['id']))
     return mjson
 
 
@@ -48,6 +47,7 @@ def loadModule(id):
     exec(impl, globals())
     globals()[mjson['name']].__module__ = 'modules'
     module = globals()[mjson['name']]()
+    module.id = mjson['id']
     with moduleLock:
         activeModules[id] = module
     try:
@@ -117,6 +117,14 @@ def getConfigurationSet(id):
         return loadConfigurationSet(id)
 
 
+def configureConnections(connections):
+    for conn in connections:
+        outMod = getModule(conn['out'])
+        inMod = getModule(conn['in'])
+        inMod.associateInputModule(outMod.id)
+        outMod.associateOutputModule(inMod.id)
+
+
 def startConfigurationSet(id):
     configSet = getConfigurationSet(id)
     configSet.active = True
@@ -138,6 +146,7 @@ def startConfigurationSet(id):
     # sort by level
     configSet.modules.sort(key=lambda t: t['level'])
 
+    configureConnections(configSet.connections)
     for m in configSet.modules:
         with moduleLock:
             module = activeModules[m['id']]

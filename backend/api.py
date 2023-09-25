@@ -11,6 +11,7 @@ from swagger_gen.swagger import Swagger
 api = Flask(__name__)
 CORS(api)
 
+
 @api.route('/health', methods=['POST', 'PUT', 'PATCH', 'GET', 'DELETE'])
 @swagger_metadata(
     summary='Basic health check',
@@ -115,6 +116,12 @@ def getAllModules():
             "id": "module ID",
             "level": 0
         }
+    ],
+    "connections": [
+        {
+            "out": "module ID",
+            "in": "module ID"
+        }
     ]
 }. Modules are run in order of their levels, in increasing order''',
     response_model=[
@@ -145,6 +152,12 @@ def addConfiguration():
         {
             "id": "module ID",
             "level": 0
+        }
+    ],
+    "connections": [
+        {
+            "out": "module ID",
+            "in": "module ID"
         }
     ]
 }''')
@@ -198,5 +211,4 @@ swagger = Swagger(
     title='eIDS backend API',
     url='/ui'
 )
-
 swagger.configure()

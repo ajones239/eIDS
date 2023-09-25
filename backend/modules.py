@@ -1,10 +1,11 @@
+import controlplane
+
 from enum import Enum
 from abc import ABC, abstractmethod
 from queue import Queue
 from threading import RLock
 import os
 import tempfile
-import controlplane
 
 
 class ModuleException(Exception):
@@ -129,22 +130,40 @@ class IOModule(ABC):
         self.consumesInput = None
         self.inputRowCount = None
         self.inputFormat = None
-        self.associatedInputModules = None
+        self.associatedInputModules = []
 
         self.producesOutput = None
         self.outputRowCount = None
         self.outputFormat = None
-        self.associatedOutputModules = None
+        self.associatedOutputModules = []
 
         self._output = None
         self._outputLock = RLock()
         self._outputQueues = []
         self._hasOutput = False
 
+        self._associationLock = RLock()
+
     def _addOutput(self, output):
         with self._outputLock:
             for q in self._outputQueues:
                 q.put(output)
+
+    def associateInputModule(self, moduleId):
+        with self._associationLock:
+            self.associatedInputModules.append(moduleId)
+
+    def associateOutputModule(self, moduleId):
+        with self._associationLock:
+            self.associatedOutputModules.append(moduleId)
+
+    def disassociateInputModule(self, moduleId):
+        with self._associationLock:
+            self.associatedInputModules.remove(moduleId)
+
+    def disassociateOutputModule(self, moduleId):
+        with self._associationLock:
+            self.associatedOutputModules.remove(moduleId)
 
     def getOutputQueue(self):
         q = Queue()
@@ -158,10 +177,15 @@ class IOModule(ABC):
         else:
             with self._outputLock:
                 self._output = data
+                self._hasOutput = True
 
     def getOutputData(self):
         with self._outputLock:
-            return self._output
+            r = self._output
+            if self.type == DataFrequency.ONE_TIME_ACCESS:
+                self._hasOutput = False
+                self._output = None
+            return r
 
     def setHasOutput(self, flag):
         with self._outputLock:
