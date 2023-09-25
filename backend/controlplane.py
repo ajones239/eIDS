@@ -6,6 +6,9 @@ from threading import RLock
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 from base64 import urlsafe_b64decode
+import importlib.util
+import subprocess
+import sys
 
 dbclient = MongoClient('mongodb://localhost:27017/')
 moduleCollection = dbclient['eIDS']['modules']
@@ -22,6 +25,9 @@ workerLock = RLock()
 
 def addModule(moduleJson):
     modules.verifyModuleJson(moduleJson)
+    for dep in moduleJson['dependencies']:
+        if importlib.util.find_spec(dep) is None:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', dep])
     return str(moduleCollection.insert_one(moduleJson).inserted_id)
 
 
@@ -31,6 +37,7 @@ def getModuleJson(id):
         raise modules.ModuleException('Invalid module ID ' + id)
     mjson['id'] = id
     mjson.pop('_id')
+    print(type(mjson['id']))
     return mjson
 
 

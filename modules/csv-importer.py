@@ -11,7 +11,7 @@ class CSVImporter(modules.Module, modules.IOModule):
     def getOutput(self):
         return self.getOutputData()
 
-    def addInput(self, data):
+    def addInput(self, moduleId, data):
         self.setOutput(numpy.array(urlsafe_b64decode(data)))
         self.setHasOutput(True)
 

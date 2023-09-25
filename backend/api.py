@@ -75,7 +75,6 @@ def getModule(id):
     try:
         resp = jsonify(controlplane.getModuleJson(id))
     except modules.ModuleException as e:
-        print(e)
         resp = jsonify({'error': e.message})
         resp.status_code = 400
     return resp
@@ -167,7 +166,7 @@ def addInputToModule(id, data):
         resp = jsonify({'error': e.message})
         resp.status_code = 400
         return resp
-    module.addInput(data)
+    module.addInput('', data)
     return Response(status=204)
 
 
