@@ -37,7 +37,8 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
                                 self.getTempFile('xg_hpo.pkl'),
                                 self.getTempFile('rf_hpo.pkl'),
                                 self.getTempFile('et_hpo.pkl'),
-                                self.getTempFile('dt_hpo.pkl'))
+                                self.getTempFile('dt_hpo.pkl'),
+                                self.getTempFile('important_features.pkl'))
 
     def start(self):
         # assumes data is {'filename', 'data'}
@@ -51,7 +52,7 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
             self.deleteTempFile(k)
 
     def evaluate_stacking_model(self, data, stack_model_file, xg_model_file,
-                                rf_model_file, et_model_file, dt_model_file):
+                                rf_model_file, et_model_file, dt_model_file, selected_features_file):
 
         # Load the data
         df = data
@@ -63,14 +64,10 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         # Fill empty values with 0
         df = df.fillna(0)
 
-        # Encode labels
-        labelencoder = LabelEncoder()
-        df.iloc[:, -1] = labelencoder.fit_transform(df.iloc[:, -1])
+        #Feature Selection -> using same features extracted during training
+        loaded_fs = joblib.load(selected_features_file)
+        X_test = df[loaded_fs].values
 
-        # Get X and y
-        X = df.drop(['Label'], axis=1).values
-        y = df.iloc[:, -1].values.reshape(-1, 1)
-        y = np.ravel(y)
 
         # Load models
         stack = joblib.load(stack_model_file)
@@ -79,17 +76,12 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         et = joblib.load(et_model_file)
         dt = joblib.load(dt_model_file)
 
-        # Fit models
-        dt.fit(X, y)
-        et.fit(X, y)
-        rf.fit(X, y)
-        xg = xg.fit(X, y)
 
         # Make predictions
-        dt_test = dt.predict(X)
-        et_test = et.predict(X)
-        rf_test = rf.predict(X)
-        xg_test = xg.predict(X)
+        dt_test = dt.predict(X_test)
+        et_test = et.predict(X_test)
+        rf_test = rf.predict(X_test)
+        xg_test = xg.predict(X_test)
 
         # Reshape predictions
         dt_test = dt_test.reshape(-1, 1)
@@ -102,20 +94,12 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
 
         # Make final prediction with stacking model
         y_predict = stack.predict(stk_test)
-        y_true = y
 
-        # Calculate and print evaluation metrics
-        stk_score = accuracy_score(y_true, y_predict)
-        print('Accuracy of Stacking: ' + str(stk_score))
-        precision, recall, fscore, none = precision_recall_fscore_support(y_true, y_predict, average='weighted')
-        print('Precision of Stacking: ' + str(precision))
-        print('Recall of Stacking: ' + str(recall))
-        print('F1-score of Stacking: ' + str(fscore))
-        print(classification_report(y_true, y_predict))
-        # cm = confusion_matrix(y_true, y_predict)
-        # f, ax = plt.subplots(figsize=(5, 5))
-        # sns.heatmap(cm, annot=True, linewidth=0.5, linecolor="red", fmt=".0f", ax=ax)
-        # plt.xlabel("y_pred")
-        # plt.ylabel("y_true")
-        # plt.show()
+        # Calculate and print evaluation metrics - most common class = class of detected attack type
+        class_output = np.bincount(y_predict).argmax()
+
+        # return class output
+        return class_output
+
+
 
