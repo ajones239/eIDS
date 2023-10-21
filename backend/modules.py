@@ -101,6 +101,12 @@ class Module(ABC):
     def getTempFilePath(self, name):
         return os.path.join(tempfile.gettempdir(), 'eIDS', self.id, name)
 
+    def getTempDir(self):
+        path = os.path.join(tempfile.gettempdir(), 'eIDS', self.id)
+        if not os.path.isdir(path):
+            os.makedirs(path)
+        return path
+
     def deleteTempFile(self, name):
         os.remove(os.path.join(tempfile.gettempdir(), 'eIDS', self.id, name))
 
