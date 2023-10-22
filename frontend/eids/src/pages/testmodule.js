@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from "react"
 import ModuleDetails from "@/components/moduledetails"
-import { getAllModuleDetails, getModuleDetails, addModule } from "@/api/module";
+import { getAllModuleDetails, getModuleDetails, addModule, addInputToModule } from "@/api/module";
 
 
 export default function TestModule() {
@@ -11,19 +11,7 @@ export default function TestModule() {
     setDisplay64(event.target.checked)
   }
 
-  //get all modules
-  const [allModule, setAllModule] = useState([]);
-
-  const fetchAllModuleDetails = async () => {
-    try{
-      const response = await getAllModuleDetails();
-      console.log(response.data)
-      setAllModule(response.data)
-    } catch (error) {
-      setModule({"Response":"None"})
-    }
-  }
-
+  
   //get modules using id
   const [module, setModule] = useState([]);
   const [moduleId, setModuleId] = useState("");
@@ -32,7 +20,7 @@ export default function TestModule() {
     console.log("[handleModuleIdFilter] ",event.target.value)
     event.target.value ? setModuleId(event.target.value) : setModuleId("");
   }
-
+  
   const fetchModuleDetails = async (moduleId) => {
     if (!moduleId) return;
     try{
@@ -42,12 +30,12 @@ export default function TestModule() {
     } catch (error) {
       setModule({"Response":"None"})
     }
-
+    
   }
-
+  
   //post module using  form
   const [postForm, setPostForm] = useState({});
-
+  
   const handlePostFormInputChange = (event) => {
     const name  = event.target.name;
     let value = null;
@@ -63,14 +51,14 @@ export default function TestModule() {
     else {
       value = event.target.value;
     }
-
+    
     setPostForm({
       ...postForm,
       [name]: value
     })
     // console.log(postForm)
   }
-
+  
   const handlePostFormSubmit = async e => {
     // alert(JSON.stringify(postForm,null,2));
     e.preventDefault();
@@ -84,29 +72,60 @@ export default function TestModule() {
     }
   }
 
+  //post update module input using form
+  const [postModuleAddInputForm, setPostModuleAddInputForm] = useState({});
+
+  const handlePostModuleAddInputFormSubmit = async e => {
+    // alert(JSON.stringify(postForm,null,2));
+    e.preventDefault();
+    try {
+
+      const response = await addInputToModule(postModuleAddInputForm);
+      console.log(response)
+      window.location.reload();
+    } catch (error) {
+      console.log(error)
+      console.log("[handlePostFormSubmit] Something went wrong")
+    }
+  }
+
+
+  //get all modules
+  const [allModule, setAllModule] = useState([]);
+
+  const fetchAllModuleDetails = async () => {
+    try{
+      const response = await getAllModuleDetails();
+      console.log(response.data)
+      setAllModule(response.data)
+    } catch (error) {
+      setModule({"Response":"None"})
+    }
+  }
 
   //refresh page with new data
   useEffect(() => {
-   async function fetchData() {
+    async function fetchData() {
       await fetchModuleDetails(moduleId);
       await fetchAllModuleDetails();
-   }
+    }
    fetchData();
 
   }, [moduleId,postForm,display64]);
 
   return (
     <>
+     
+      <h1>TestModule</h1>
+      <div className="form-check">
+        <label className="form-check-label" htmlFor="display64Check">
+          Display 64?
+        </label>
+        <input className="form-check-input" type="checkbox" value="" id="display64Check" onChange={handleDisplay64Check}/>
+      </div>
+      <hr/>
+      <h3>Get Module Detail</h3>
       <div>
-        <h1>TestModule</h1>
-        <div className="form-check">
-          <label className="form-check-label" htmlFor="display64Check">
-            Display 64?
-          </label>
-          <input className="form-check-input" type="checkbox" value="" id="display64Check" onChange={handleDisplay64Check}/>
-        </div>
-        <hr/>
-        <h3>Get Module Detail</h3>
         <div className="form-outline mb-3">
           <label className="form-label">
             Filter module by id:
@@ -116,10 +135,11 @@ export default function TestModule() {
         </div>
         <h6>getModuleDetails</h6>
         <ModuleDetails module={module} display64={display64} />
+
       </div>
       <hr/>
+      <h3>Post Module</h3>
       <div className="mb-10">
-        <h3>Post Module</h3>
         <form>
           <div className="form-group">
             <label htmlFor="postModuleName">Name</label>
@@ -147,6 +167,32 @@ export default function TestModule() {
       </div>
       <h6>Post Module Form Info</h6>
       <ModuleDetails module={postForm} display64={display64}  />
+      <hr/>
+
+      <h3>Update Input of Module</h3>
+      <div className="mb-10">
+        <form>
+          <div className="form-group">
+            <label htmlFor="postModuleAddInputID">ID</label>
+            <input type="text" className="form-control" id="postModuleAddInputID" name="id" placeholder="Module ID" onChange={(e) => setPostModuleAddInputForm({
+                                                                                                                                    ...postModuleAddInputForm,
+                                                                                                                                    "id": e.target.value
+                                                                                                                                  })}/>
+          </div>
+          <div className="form-group">
+            <label htmlFor="postModuleAddInputData">Data</label>
+            <input type="text" className="form-control" id="postModuleAddInputData" name="data" placeholder="Data"onChange={(e) => setPostModuleAddInputForm({
+                                                                                                                                    ...postModuleAddInputForm,
+                                                                                                                                    "data": e.target.value
+                                                                                                                                  })}/>
+          </div>
+          <button type="submit" className="btn btn-primary" onClick={handlePostModuleAddInputFormSubmit}>Submit</button>
+        </form>
+      </div>
+      <div>
+
+      </div>
+      <hr/>
       <h3>Get all Modules</h3>
       <div>
         {allModule.map((module) => (

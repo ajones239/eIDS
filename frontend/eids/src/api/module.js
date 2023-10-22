@@ -53,3 +53,21 @@ export const addModule = async(moduleData) => {
    }
    return response;
 }
+
+export const addInputToModule = async(moduleData) => {
+   console.log(moduleData.data)
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}module/${moduleData.id}/input/${moduleData.data}`;
+   const response = await axios.post(url, moduleData, {
+      headers: {
+         'Content-type': 'application/json'
+      }
+   });
+   if(log) {
+      const prefix = '[modules/addModule]';
+      console.log(prefix);
+      console.log('url: ',url);
+      console.log('Module Data: ', moduleData)
+      console.log('response:',response)
+   }
+   return response;
+}
