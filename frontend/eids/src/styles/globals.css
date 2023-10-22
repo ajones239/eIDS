@@ -16,3 +16,7 @@
   }
 }
  */
+
+hr {
+  --bs-border-width:10px
+}
