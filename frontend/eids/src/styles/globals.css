@@ -16,3 +16,14 @@
   }
 }
  */
+
+hr {
+  --bs-border-width:10px
+}
+
+/*
+  Overwrite darkStyle for react-json-view-lite
+*/
+._11RoI {
+  background: rgb(33, 37, 41) !important;
+}

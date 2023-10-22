@@ -1,5 +1,6 @@
 import { getModuleDetails } from "@/api/module";
-
+import { JsonView, allExpanded, darkStyles, defaultStyles } from 'react-json-view-lite';
+import 'react-json-view-lite/dist/index.css';
 import React from "react";
 
 export default function ModuleDetails({module,display64=false}){
@@ -11,13 +12,13 @@ export default function ModuleDetails({module,display64=false}){
    else {
       test = module
    }
-
-   
+  
    return (
       <div>
          {/* <p>{getModuleDetails(module_id)}</p> */}
          <pre>
-            {JSON.stringify(test, null, 2)}
+            <JsonView data={test} style={darkStyles}/>
+            {/* {JSON.stringify(test, null, 2)} */}
 
          </pre>
       </div>
