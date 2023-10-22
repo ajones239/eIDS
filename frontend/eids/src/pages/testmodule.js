@@ -85,7 +85,7 @@ export default function TestModule() {
       window.location.reload();
     } catch (error) {
       console.log(error)
-      console.log("[handlePostFormSubmit] Something went wrong")
+      console.log("[handlePostModuleAddInputFormSubmit] Something went wrong")
     }
   }
 
