@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ConfigDetails from "@/components/configdetails"
-import { addConfig, getConfigDetails, startConfig } from "@/api/configuration";
+import { addConfig, getAllConfigDetails, getConfigDetails, startConfig } from "@/api/configuration";
 export default function TestConfiguration() {
   //post module using  form
   const [postFormConfig, setPostFormConfig] = useState({});
@@ -82,16 +82,28 @@ export default function TestConfiguration() {
     }
   }
   
+  //get all configuration sets
+  const [allConfig, setAllConfig] = useState([]);
+  const fetchAllConfigDetails = async () => {
+    try{
+      const response = await getAllConfigDetails();
+      console.log(response.data)
+      setAllConfig(response.data)
+    } catch (error) {
+      setModule({"Response":"None"})
+    }
+  }
 
-    //refresh page with new data
-    useEffect(() => {
-      async function fetchData() {
-        await fetchConfigDetails(configId);
-        // await fetchAllConfigDetails();
-      }
-     fetchData();
-  
-    }, [configId,postFormConfig]);
+
+  //refresh page with new data
+  useEffect(() => {
+    async function fetchData() {
+      await fetchConfigDetails(configId);
+      await fetchAllConfigDetails();
+    }
+    fetchData();
+
+  }, [configId,postFormConfig]);
 
   return (
     <>
@@ -147,7 +159,12 @@ export default function TestConfiguration() {
             </form>
           </div>
         <hr />
-        <h3>Get all configs(Backend TBD)</h3>
+        <h3>Get all configs</h3>
+          <div>
+            {allConfig.map((config) => (
+              <ConfigDetails key={config.id} config={config} />
+            ))}            
+          </div>
 
       </div>
     </>
