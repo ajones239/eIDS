@@ -117,6 +117,17 @@ def getConfigurationSet(id):
         return loadConfigurationSet(id)
 
 
+def getAllConfigurationSetsJson():
+    cursor = configSetCollection.find({})
+    results = []
+    for document in cursor:
+        document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    return results
+
+
+
 def configureConnections(connections):
     for conn in connections:
         outMod = getModule(conn['out'])
