@@ -6,6 +6,23 @@ const config = {
    withCredentials: false
 }
 const log = true;
+
+
+export const getAllModuleDetails = async () => {
+
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}module`;
+   const response = await axios.get(url,config);
+   if(log){
+      const prefix = '[modules/getAllModuleDetails]';
+      console.log(prefix);
+      console.log('url: ', url);
+      console.log('response: ',response)
+   }
+   return response;
+
+}
+
+
 export const getModuleDetails = async (moduleId) => {
 
    const url = `${process.env.NEXT_PUBLIC_ENDPOINT}module/${moduleId}`;
