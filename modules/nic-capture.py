@@ -1,6 +1,8 @@
 import pyshark
+import os
 from queue import Queue, Full, Empty
 from threading import Thread, Lock
+import time
 
 class NICCapture(modules.Module, modules.IOModule):
 
@@ -8,10 +10,10 @@ class NICCapture(modules.Module, modules.IOModule):
         super(NICCapture, self).__init__()
         self.stream = False
         self.dataFrequency = modules.DataFrequency.CUSTOM
-        self.dataFrequencyN = 5
+        self.dataFrequencyN = 10
         self.consumesInput = False
         self.producesOutput = True
-        self.outputFormat = ['/path/to/file.pcap']
+        self.outputFormat = '/path/to/file.pcap'
         self.outputRowCount = 1
 
         self.pcapQueue = Queue(maxsize=5)
@@ -29,6 +31,7 @@ class NICCapture(modules.Module, modules.IOModule):
         pass
 
     def start(self):
+        self.addTempFile('none', b'0')
         self.thread = Thread(target=self.captureNetworkTraffic)
         self.thread.start()
 
@@ -45,13 +48,17 @@ class NICCapture(modules.Module, modules.IOModule):
                 if self.done:
                     break
             outfile = self.getTempFilePath('f' + str(self.fcount) + '.pcap')
-            cap = pyshark.LiveCapture(interface='any', output_file=outfile)
-            cap.sniff(self.dataFrequencyN)
+            cap = pyshark.LiveCapture(interface='wlp6s0', output_file=outfile)
+            cap.sniff(timeout=self.dataFrequencyN)
             cap.close()
             try:
                 self.pcapQueue.put(outfile, block=True, timeout=self.dataFrequencyN)
             except Full:
+                time.sleep(self.dataFrequencyN)
                 continue
             self.fcount += 1
-
+            if self.pcapQueue.qsize() > 1:
+                self.setHasOutput(True)
+            else:
+                self.setHasOutput(False)
 

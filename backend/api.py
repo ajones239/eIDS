@@ -9,6 +9,7 @@ from swagger_gen.swagger import Swagger
 
 
 api = Flask(__name__)
+api.debug = True
 CORS(api)
 
 
