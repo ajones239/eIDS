@@ -83,6 +83,9 @@ def getAllModulesJson():
     return results
 
 
+def updateModule(id,data):
+    pass
+
 def addConfigurationSet(confJson):
     id = str(configSetCollection.insert_one(confJson).inserted_id)
     confSet = configurationset.ConfigurationSet(confJson)
