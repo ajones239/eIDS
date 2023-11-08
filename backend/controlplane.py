@@ -83,8 +83,60 @@ def getAllModulesJson():
     return results
 
 
-def updateModule(id,data):
-    pass
+def updateModule(id,moduleJson):
+    #verify Json
+    modules.verifyModuleJson(moduleJson)
+    #get list of active config sets that we need to restart
+    runningConfigSets = []
+    with configSetLock:
+        for c in activeConfigurationSets:
+            if id in c.modules and c.active == True:
+                runningConfigSets.insert(c.id)
+    #stop module
+    stopModule(id)
+    #unload module
+    unloadModule(id)
+    #update module
+    for dep in moduleJson['dependencies']:
+        if importlib.util.find_spec(dep) is None:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', dep])
+    moduleCollection.update_one({"_id":id},moduleJson)
+    #reload module
+    loadModule(id)
+    #restart configSets
+    for c in runningConfigSets:
+        startConfigurationSet(c.id)
+    
+
+def deleteModule(id):
+    stopModule(id)
+    unloadModule(id)
+    moduleCollection.delete_one({"_id":id})
+
+
+#removes module object from memory
+def unloadModule(id):
+    with moduleLock:
+        try:
+            m = activeModules.pop(id)
+            del m
+        except KeyError:
+            pass
+
+
+
+#stop module workers and config sets
+def stopModule(id):
+    #check configuration sets first and stop workers
+    with configSetLock:
+        for c in activeConfigurationSets:
+            if id in c.modules:
+                stopConfigurationSet(c.id)
+    
+    #redundant stop for rogue workers
+    stopWorker(id)
+
+
 
 def addConfigurationSet(confJson):
     id = str(configSetCollection.insert_one(confJson).inserted_id)
@@ -129,6 +181,30 @@ def getAllConfigurationSetsJson():
         results.append(document)
     return results
 
+def updateConfigurationSet(id,configJson):
+    isActive = getConfigurationSet(id).active
+    stopConfigurationSet(id)
+    unloadConfigurationSet(id)
+    moduleCollection.update_one({"_id":id},configJson)
+    loadConfigurationSet(id)
+
+    if isActive:
+        startConfigurationSet(id)
+
+
+def deleteConfigurationSet(id):
+    stopConfigurationSet(id)
+    unloadConfigurationSet(id)
+    configSetCollection.delete_one({"_id":id})
+
+
+def unloadConfigurationSet(id):
+    with configSetLock:
+        try:
+            c = activeConfigurationSets.pop(id)
+            del c
+        except KeyError:
+            pass
 
 
 def configureConnections(connections):
@@ -165,4 +241,35 @@ def startConfigurationSet(id):
         with moduleLock:
             module = activeModules[m['id']]
         w = worker.Worker(module)
+        with workerLock:
+            activeWorkers[m['id']] = w
         w.start()
+
+def stopConfigurationSet(id):
+    configSet = getConfigurationSet(id)
+    if configSet.active == True:
+        configSet.active = False
+    else:
+        return
+
+    #stop workers first, will pbreak other running configs running the same workers
+    #reverse sort module by level 
+    configSet.modules.sort(key=lambda t: t['level'], reversed=True)
+    with moduleLock:
+        for m in configSet.modules:
+            stopWorker(m['id'])
+    
+
+def stopWorker(id):
+    with workerLock:
+        try:
+            activeWorkers[id].stop()
+            activeWorkers.pop(id)
+        except KeyError:
+            pass
+
+
+    
+                    
+    
+
