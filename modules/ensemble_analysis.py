@@ -31,14 +31,16 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         return self.getOutputData()
 
     def addInput(self, moduleId, data):
-        self.evaluate_stacking_model(data,
-                                self.getTempFile('stack.pkl'),
-                                self.getTempFile('rf_hpo.pkl'),
-                                self.getTempFile('xg_hpo.pkl'),
-                                self.getTempFile('rf_hpo.pkl'),
-                                self.getTempFile('et_hpo.pkl'),
-                                self.getTempFile('dt_hpo.pkl'),
-                                self.getTempFile('important_features.pkl'))
+        if data is None:
+            return
+        r = self.evaluate_stacking_model(data,
+                                self.getTempFilePath('stack.pkl'),
+                                self.getTempFilePath('xg_hpo.pkl'),
+                                self.getTempFilePath('rf_hpo.pkl'),
+                                self.getTempFilePath('et_hpo.pkl'),
+                                self.getTempFilePath('dt_hpo.pkl'),
+                                self.getTempFilePath('important_features.pkl'))
+        print('Class for interval of network data:' + str(r))
 
     def start(self):
         # assumes data is {'filename', 'data'}
@@ -99,7 +101,8 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         class_output = np.bincount(y_predict).argmax()
 
         # return class output
-        return class_output
-
-
+        if np.max(np.bincount(y_predict)) == 0:
+            return 'No Attacks Detected'
+        else:
+            return class_output
 

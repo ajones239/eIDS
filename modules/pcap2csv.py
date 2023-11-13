@@ -14,9 +14,9 @@ class Pcap2Csv(modules.Module, modules.IOModule):
         super(Pcap2Csv, self).__init__()
         self.stream = False
         self.dataFrequency = modules.DataFrequency.CUSTOM
-        self.dataFrequencyN = 5
+        self.dataFrequencyN = 10
         self.consumesInput = True
-        self.inputRowFormat = ['/path/to/file.pcap']
+        self.inputRowFormat = '/path/to/file.pcap'
         self.producesOutput = True
         self.outputFormat = ['Destination Port', 'Flow Duration', 'Total Fwd Packets', 'Total Backward Packets','Total Length of Fwd Packets', 'Total Length of Bwd Packets', 'Fwd Packet Length Max', 'Fwd Packet Length Min', 'Fwd Packet Length Mean', 'Fwd Packet Length Std','Bwd Packet Length Max', 'Bwd Packet Length Min', 'Bwd Packet Length Mean', 'Bwd Packet Length Std','Flow Bytes/s', 'Flow Packets/s', 'Flow IAT Mean', 'Flow IAT Std', 'Flow IAT Max', 'Flow IAT Min','Fwd IAT Total', 'Fwd IAT Mean', 'Fwd IAT Std', 'Fwd IAT Max', 'Fwd IAT Min','Bwd IAT Total', 'Bwd IAT Mean', 'Bwd IAT Std', 'Bwd IAT Max', 'Bwd IAT Min','Fwd PSH Flags', 'Bwd PSH Flags', 'Fwd URG Flags', 'Bwd URG Flags', 'Fwd Header Length', 'Bwd Header Length','Fwd Packets/s', 'Bwd Packets/s', 'Min Packet Length', 'Max Packet Length', 'Packet Length Mean', 'Packet Length Std', 'Packet Length Variance','FIN Flag Count', 'SYN Flag Count', 'RST Flag Count', 'PSH Flag Count', 'ACK Flag Count', 'URG Flag Count', 'CWE Flag Count', 'ECE Flag Count', 'Down/Up Ratio', 'Average Packet Size', 'Avg Fwd Segment Size', 'Avg Bwd Segment Size', 'Fwd Header Length','Fwd Avg Bytes/Bulk', 'Fwd Avg Packets/Bulk', 'Fwd Avg Bulk Rate', 'Bwd Avg Bytes/Bulk', 'Bwd Avg Packets/Bulk','Bwd Avg Bulk Rate','Subflow Fwd Packets', 'Subflow Fwd Bytes', 'Subflow Bwd Packets', 'Subflow Bwd Bytes','Init_Win_bytes_forward', 'Init_Win_bytes_backward', 'act_data_pkt_fwd', 'min_seg_size_forward','Active Mean', 'Active Std', 'Active Max', 'Active Min','Idle Mean', 'Idle Std', 'Idle Max', 'Idle Min', 'Label']
         self.outputRowCount = -1
@@ -60,12 +60,16 @@ class Pcap2Csv(modules.Module, modules.IOModule):
                     break
             try:
                 pcap = self.inQueue.get_nowait()
+                if pcap is None:
+                    continue
             except Empty:
                 continue
             shutil.move(pcap, os.path.join(self.getTempDir(), 'in', 'f.pcap'))
             cmd = 'CICFlowMeter'
-            if platform.system() == 'Windows':
+            if platform.lower() == 'windows':
                 cmd += '.bat'
+            else:
+                os.chmod(os.path.join(self.getTempDir(), 'bin', cmd), 0o755)
             cmds = [
                 os.path.join(self.getTempDir(), 'bin', cmd),
                 os.path.join(self.getTempDir(), 'in', 'f.pcap'),
@@ -73,17 +77,24 @@ class Pcap2Csv(modules.Module, modules.IOModule):
             ]
             subprocess.run(cmds)
             os.remove(os.path.join(self.getTempDir(), 'in', 'f.pcap'))
-            data = pandas.read_csv(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'))
+            data = pandas.read_csv(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'), skiprows=3)
+            # data = data.rename(columns=data.iloc[0]).drop(data.index[0])
+            print(data)
             os.remove(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'))
             try:
                 self.outQueue.put(self.processDataframe(data), block=False)
             except Full:
                 continue
 
+            if self.outQueue.qsize() > 1:
+                self.setHasOutput(True)
+            else:
+                self.setHasOutput(False)
+
     def processDataframe(self, df):
-        cols_to_drop = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Protocol', 'Timestamp', 'Label']
+        cols_to_drop = ['Flow ID', 'Src IP', 'Dst Port', 'Src Port', 'Dst IP', 'Dst Port', 'Protocol', 'Timestamp', 'Label']
         cols_to_rename = {
-            'Dst Port': 'Destination Port',
+            # 'Dst Port': 'Destination Port',
             'Total Fwd Packet': 'Total Fwd Packets',
             'Total Bwd packets': 'Total Backward Packets',
             'Total Length of Fwd Packet': 'Total Length of Fwd Packets',
@@ -106,5 +117,5 @@ class Pcap2Csv(modules.Module, modules.IOModule):
         }
         df.drop(columns=cols_to_drop, inplace=True)
         df.rename(columns=cols_to_rename, inplace=True)
-        df.insert(55, 'Fwd Header Length', df['Fwd Header Length'])
+        df.insert(54, 'Fwd Header Length.1', df['Fwd Header Length'])
         return df

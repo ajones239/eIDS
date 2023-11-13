@@ -9,6 +9,7 @@ from swagger_gen.swagger import Swagger
 
 
 api = Flask(__name__)
+api.debug = True
 CORS(api)
 
 
@@ -21,6 +22,7 @@ CORS(api)
 def ping():
     return Response(status=204)
 
+#region Module
 
 @api.route('/module', methods=['POST'])
 @swagger_metadata(
@@ -104,6 +106,32 @@ def getAllModules():
     return jsonify(controlplane.getAllModulesJson())
 
 
+@api.route('/module/<id>/input/<data>', methods=['POST'])
+@swagger_metadata(
+    summary='Add input to a module',
+    description='Inputs a base64 encoded string to the module with the given ID',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def addInputToModule(id, data):
+    try:
+        module = controlplane.getModuleWithException(id)
+    except modules.ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+    module.addInput('', data)
+    return Response(status=204)
+
+@api.route('/module/<id>/update')
+def updateModule(id,data):
+    pass
+
+#endregion
+
+#region Configuration
 @api.route('/configuration', methods=['POST'])
 @swagger_metadata(
     summary='Add a new configuration set',
@@ -214,26 +242,7 @@ def startConfigurationSet(id):
         resp.status_code = 400
         return resp
 
-
-@api.route('/module/<id>/input/<data>', methods=['POST'])
-@swagger_metadata(
-    summary='Add input to a module',
-    description='Inputs a base64 encoded string to the module with the given ID',
-    response_model=[
-        (204, 'Success'),
-        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
-    ]
-)
-def addInputToModule(id, data):
-    try:
-        module = controlplane.getModuleWithException(id)
-    except modules.ModuleException as e:
-        resp = jsonify({'error': e.message})
-        resp.status_code = 400
-        return resp
-    module.addInput('', data)
-    return Response(status=204)
-
+#endregion
 
 swagger = Swagger(
     app=api,
