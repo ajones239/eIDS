@@ -16,6 +16,7 @@ export default function Topbar({ Component, pageProps }) {
             <Nav.Link href="/analytics">Analytics</Nav.Link>
             <Nav.Link href="/logs">Logs</Nav.Link>
             <Nav.Link href="/testmodule">TestModule</Nav.Link>
+            <Nav.Link href="/testconfiguration">TestConfig</Nav.Link>
             <NavDropdown title="Actions" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">
