@@ -84,6 +84,8 @@ def getAllModulesJson():
 
 
 def updateModule(id,moduleJson):
+    if not moduleCollection.find_one({"_id":id}):
+        raise modules.ModuleException('No module loaded with ID: ' + id)
     #verify Json
     modules.verifyModuleJson(moduleJson)
     #get list of active config sets that we need to restart
@@ -106,12 +108,14 @@ def updateModule(id,moduleJson):
     #restart configSets
     for c in runningConfigSets:
         startConfigurationSet(c.id)
+    return True
     
 
 def deleteModule(id):
     stopModule(id)
     unloadModule(id)
     moduleCollection.delete_one({"_id":id})
+    return True
 
 
 #removes module object from memory
@@ -270,6 +274,12 @@ def stopWorker(id):
 
 
     
-                    
-    
+def getAllWorkersModuleID():
+    data = []
+    with workerLock:
+        try:
+            data.append(activeWorkers.keys())
+        except KeyError:
+            pass    
+    return data
 

@@ -125,9 +125,43 @@ def addInputToModule(id, data):
     module.addInput('', data)
     return Response(status=204)
 
-@api.route('/module/<id>/update')
-def updateModule(id,data):
-    pass
+@api.route('/module/<id>/update', methods=['PUT'])
+@swagger_metadata(
+    summary='Update Module',
+    description='Updates module with the given ID using data in body',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def updateModule(id):
+    try:
+        controlplane.updateModule(id,request.get_json())
+    except modules.ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+    return Response(status=200)
+
+@api.route('/module/<id>', methods=['DELETE'])
+@swagger_metadata(
+    summary='Delete module',
+    description='Delete module from DB and stops active modules/configurations',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def deleteModule(id):
+    try:
+        controlplane.deleteModule(id)
+    except modules.ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+    return Response(status=200)
+    
+
+
 
 #endregion
 
@@ -224,6 +258,42 @@ def getAllConfigurationSets():
     return jsonify(controlplane.getAllConfigurationSetsJson())
 
 
+@api.route('/configuration/<id>/update', methods=['PUT'])
+@swagger_metadata(
+    summary='Update Configuration Set',
+    description='Updates configuration set with the given ID using data in body. Will stop set if active along sets with similar workers',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def updateConfiguration(id):
+    try:
+        controlplane.updateConfigurationSet(id,request.get_json())
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+    return Response(status=200)
+
+@api.route('/configuration/<id>', methods=['DELETE'])
+@swagger_metadata(
+    summary='Delete configuration set',
+    description='Delete configuration set from DB and stops active configurations/workers',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def deleteConfiguration(id):
+    try:
+        controlplane.deleteConfigurationSet(id)
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+    return Response(status=200)
+    
+
 @api.route('/configuration/<id>', methods=['POST'])
 @swagger_metadata(
     summary='Start a configuration set (runs all modules in set)',
@@ -241,6 +311,25 @@ def startConfigurationSet(id):
         resp = jsonify({'error': e.message})
         resp.status_code = 400
         return resp
+
+#endregion
+
+
+#region worker
+
+@api.route('/worker', methods=['GET'])
+@swagger_metadata(
+    summary='Returns all worker module IDs',
+    description='Get all active IDs of modules used by workers',
+    response_model=[
+        (200, '''Success. Returns JSON response. Ex)
+[{
+    "modules": List of module IDs
+}]''')
+    ]
+)
+def getAllWorkers():
+    return jsonify({'modules':controlplane.getAllWorkersModuleID()})
 
 #endregion
 
