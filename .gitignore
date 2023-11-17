@@ -1,2 +1,4 @@
 venv
 models/*
+logs/debug logs/debug-2023-11-16.log logs/info.log
+logs
