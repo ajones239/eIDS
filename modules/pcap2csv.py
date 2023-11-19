@@ -77,7 +77,7 @@ class Pcap2Csv(modules.Module, modules.IOModule):
             ]
             subprocess.run(cmds)
             os.remove(os.path.join(self.getTempDir(), 'in', 'f.pcap'))
-            data = pandas.read_csv(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'), skiprows=3)
+            data = pandas.read_csv(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'))
             # data = data.rename(columns=data.iloc[0]).drop(data.index[0])
             print(data)
             os.remove(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'))
@@ -118,4 +118,7 @@ class Pcap2Csv(modules.Module, modules.IOModule):
         df.drop(columns=cols_to_drop, inplace=True)
         df.rename(columns=cols_to_rename, inplace=True)
         df.insert(54, 'Fwd Header Length.1', df['Fwd Header Length'])
+        df['Flow Duration'] = pandas.to_numeric(df['Flow Duration'], errors='coerce')
+        df.dropna(inplace=True)
+        print(df)
         return df
