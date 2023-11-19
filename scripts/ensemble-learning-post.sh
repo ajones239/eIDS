@@ -4,7 +4,7 @@ pushd ../modules >/dev/null || exit
 
 echo "{
         \"name\": \"EnsembleAnalysis\",
-        \"description\": \"An ensemble-based analys module. More description goes here...\",
+        \"description\": \"An ensemble-based analysis module. More description goes here...\",
         \"type\": 3,
         \"dependencies\": [
             \"scikit-learn\",
