@@ -51,6 +51,7 @@ def loadModule(id):
     with moduleLock:
         activeModules[id] = module
     try:
+        module.name = mjson['name']
         module.data = mjson['data']
     except KeyError:
         pass
@@ -84,7 +85,7 @@ def getAllModulesJson():
 
 
 def updateModule(id,moduleJson):
-    if not moduleCollection.find_one({"_id":id}):
+    if not moduleCollection.find_one({"_id":ObjectId(id)}):
         raise modules.ModuleException('No module loaded with ID: ' + id)
     #verify Json
     modules.verifyModuleJson(moduleJson)
@@ -102,7 +103,7 @@ def updateModule(id,moduleJson):
     for dep in moduleJson['dependencies']:
         if importlib.util.find_spec(dep) is None:
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', dep])
-    moduleCollection.update_one({"_id":id},moduleJson)
+    moduleCollection.update_one({"_id":ObjectId(id)},{"$set": moduleJson})
     #reload module
     loadModule(id)
     #restart configSets
@@ -114,7 +115,8 @@ def updateModule(id,moduleJson):
 def deleteModule(id):
     stopModule(id)
     unloadModule(id)
-    moduleCollection.delete_one({"_id":id})
+    moduleCollection.delete_one({"_id":ObjectId(id)})
+
     return True
 
 
@@ -123,6 +125,7 @@ def unloadModule(id):
     with moduleLock:
         try:
             m = activeModules.pop(id)
+            del globals()[m.name]
             del m
         except KeyError:
             pass
@@ -189,7 +192,7 @@ def updateConfigurationSet(id,configJson):
     isActive = getConfigurationSet(id).active
     stopConfigurationSet(id)
     unloadConfigurationSet(id)
-    moduleCollection.update_one({"_id":id},configJson)
+    moduleCollection.update_one({"_id":ObjectId(id)},{"$set": configJson})
     loadConfigurationSet(id)
 
     if isActive:
@@ -199,7 +202,7 @@ def updateConfigurationSet(id,configJson):
 def deleteConfigurationSet(id):
     stopConfigurationSet(id)
     unloadConfigurationSet(id)
-    configSetCollection.delete_one({"_id":id})
+    configSetCollection.delete_one({"_id":ObjectId(id)})
 
 
 def unloadConfigurationSet(id):
@@ -283,3 +286,5 @@ def getAllWorkersModuleID():
             pass    
     return data
 
+def printGlobals():
+    print(globals().keys())

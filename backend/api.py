@@ -154,9 +154,9 @@ def updateModule(id):
 def deleteModule(id):
     try:
         controlplane.deleteModule(id)
-    except modules.ModuleException as e:
-        resp = jsonify({'error': e.message})
-        resp.status_code = 400
+    except Exception as e:
+        resp = jsonify({'error': str(e)})
+        resp.status = 400
         return resp
     return Response(status=200)
     
@@ -330,6 +330,19 @@ def startConfigurationSet(id):
 )
 def getAllWorkers():
     return jsonify({'modules':controlplane.getAllWorkersModuleID()})
+
+@api.route('/global', methods=['GET'])
+@swagger_metadata(
+    summary='Prints globals',
+    description='Print globals',
+    response_model=[
+        (200, 'Success')
+    ]
+)
+def printGlobals():
+    controlplane.printGlobals()
+    print(globals().keys())
+    return Response(status=200)
 
 #endregion
 

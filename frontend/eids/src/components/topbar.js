@@ -14,6 +14,8 @@ function ModuleLinks(){
           <Dropdown.Menu>
             <Nav.Link href="/module/addmodule">Add Modules</Nav.Link>
             <Nav.Link href="/module/updatemodule">Update Modules</Nav.Link>
+            <Nav.Link href="/module/deletemodule">Delete Modules</Nav.Link>
+
           </Dropdown.Menu>
         </Dropdown>
         

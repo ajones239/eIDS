@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from "react"
 import ModuleDetails from "@/components/moduledetails"
-import { getAllModuleDetails, getModuleDetails, addModule, addInputToModule } from "@/api/module";
+import { getAllModuleDetails, getModuleDetails, updateModule } from "@/api/module";
 
 
 export default function UpdateModule() {
@@ -69,8 +69,10 @@ export default function UpdateModule() {
     // alert(JSON.stringify(postForm,null,2));
     e.preventDefault();
     try {
-      const response = await addModule(postForm);
-      alert("Module ID: " + response.data["id"]);
+      console.log("Submitting postform:")
+      // console.log(postForm)
+      const response = await updateModule(moduleId,postForm);
+      alert(response.status);
       window.location.reload();
     } catch (error) {
       console.log(error)
