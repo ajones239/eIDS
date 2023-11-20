@@ -76,7 +76,7 @@ export default function Module() {
   return (
     <div className="container">
      
-      <h1>Current Modules</h1>
+      <h1>Active Modules</h1>
       <div>
         <ModuleTableActive modules={allActiveModule}/>
       </div>

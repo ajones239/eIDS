@@ -257,6 +257,38 @@ def getConfiguration(id):
 def getAllConfigurationSets():
     return jsonify(controlplane.getAllConfigurationSetsJson())
 
+@api.route('/configuration/active', methods=['GET'])
+@swagger_metadata(
+    summary='Get all the active configuration sets',
+    description='Returns all active configuration sets',
+
+    response_model=[
+            (200, '''Success. Returns JSON response with list. Ex)
+                [{
+                    "name": "configuration set name",
+                    "description": "description of module configuration set",
+                    "modules": [
+                        {
+                            "id": "module ID",
+                            "level": 0
+                        }
+                    ],
+                    "connections": [
+                        {
+                            "out": "module ID",
+                            "in": "module ID"
+                        }
+                    ]
+                }],...''')
+    ]
+)
+def getAllActiveConfigurationSets():
+    return jsonify(controlplane.getAllActiveConfigurationSetsJson())
+
+
+
+
+
 
 @api.route('/configuration/<id>/update', methods=['PUT'])
 @swagger_metadata(

@@ -1,19 +1,19 @@
 import React, {useState,useEffect} from "react"
-import { deleteModule } from "@/api/module";
+import { deleteConfig } from "@/api/configuration";
 
 
 export default function DeleteConfig() {
 
-  const [moduleId, setModuleId] = useState("");
+  const [configId, setConfigId] = useState("");
 
-  const handleModuleIdChange = (event) => {
-    event.target.value ? setModuleId(event.target.value) : setModuleId("")
+  const handleConfigIdChange = (event) => {
+    event.target.value ? setConfigId(event.target.value) : setConfigId("")
   }
   const handlePostFormSubmit = async e => {
     e.preventDefault();
     try {
       console.log("Deleting:")
-      const response = await deleteModule(moduleId);
+      const response = await deleteConfig(configId);
       alert(response.status);
       window.location.reload();
     } catch (error) {
@@ -30,19 +30,19 @@ export default function DeleteConfig() {
   //refresh page with new data
   useEffect(() => {
 
-  }, [moduleId]);
+  }, [configId]);
 
 
   return (
     <div className="container">
-      <h1>Delete Module</h1>
+      <h1>Delete Config</h1>
  
       <div className="form-outline mb-3">
           <label className="form-label">
             Enter ID to delete:
           </label>
-            <input className="form-control" placeholder="Module ID" type="text" name="id" value={moduleId}
-                  onChange={handleModuleIdChange}/>
+            <input className="form-control" placeholder="Config ID" type="text" name="id" value={configId}
+                  onChange={handleConfigIdChange}/>
         </div>
           <fieldset>
             <button type="submit" className="btn btn-primary" onClick={handlePostFormSubmit}>Submit</button>

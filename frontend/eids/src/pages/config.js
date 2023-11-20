@@ -1,7 +1,10 @@
 import React, {useState,useEffect} from "react"
 import ModuleDetails from "@/components/moduledetails"
-import { getAllModuleDetails, getModuleDetails, addModule, addInputToModule } from "@/api/module";
+import { getAllModuleDetails, getModuleDetails, addModule, addInputToModule, getWorkingModules } from "@/api/module";
 import ModuleTable from "@/components/moduletable";
+import ModuleTableActive from "@/components/moduletableactive";
+import ConfigTableActive from "@/components/configtableactive";
+import { getAllActiveConfigDetails } from "@/api/configuration";
 
 export default function Config() {
   //display either base64 or regular text when getting module details
@@ -47,11 +50,26 @@ export default function Config() {
     }
   }
 
+    //get all active config
+    const [allActiveConfig, setAllActiveConfig] = useState([]);
+
+    const fetchAllActiveConfigDetails = async () => {
+      try{
+        const response = await getAllActiveConfigDetails();
+        console.log(response.data)
+        setAllActiveConfig(response.data)
+      } catch (error) {
+        setAllActiveConfig(null)
+      }
+    }
+  
+
   //refresh page with new data
   useEffect(() => {
     async function fetchData() {
-      await fetchModuleDetails(moduleId);
-      await fetchAllModuleDetails();
+      // await fetchModuleDetails(moduleId);
+      // await fetchAllModuleDetails();
+      await fetchAllActiveConfigDetails();
     }
    fetchData();
 
@@ -60,14 +78,17 @@ export default function Config() {
   return (
     <div className="container">
      
-      <h1>Current Modules</h1>
-      <div className="form-check">
+      <h1>Active Configs</h1>
+      <div>
+        <ConfigTableActive configs={allActiveConfig}/>
+      </div>
+      <hr/>
+      {/* <div className="form-check">
         <label className="form-check-label" htmlFor="display64Check">
           Display 64?
         </label>
         <input className="form-check-input" type="checkbox" value="" id="display64Check" onChange={handleDisplay64Check}/>
       </div>
-      <hr/>
       <div>
         <div className="form-outline mb-3">
           <label className="form-label">
@@ -85,7 +106,7 @@ export default function Config() {
       <h3>All Modules</h3>
       <div>
         <ModuleTable modules={allModule} display64={false}/>
-      </div>
+      </div> */}
     </div>
   )
 }

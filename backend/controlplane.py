@@ -93,8 +93,9 @@ def updateModule(id,moduleJson):
     runningConfigSets = []
     with configSetLock:
         for c in activeConfigurationSets:
-            if id in activeConfigurationSets[c].modules and activeConfigurationSets[c].active == True:
-                runningConfigSets.insert(activeConfigurationSets[c].id)
+            if any ( d['id'] == id for d in activeConfigurationSets[c].modules) and activeConfigurationSets[c].active == True:
+                runningConfigSets.append(c)
+
     #stop module
     stopModule(id)
     #unload module
@@ -107,8 +108,11 @@ def updateModule(id,moduleJson):
     #reload module
     loadModule(id)
     #restart configSets
+
     for c in runningConfigSets:
-        startConfigurationSet(c.id)
+        print(c)
+        startConfigurationSet(c)
+
     return True
     
 
@@ -187,6 +191,17 @@ def getAllConfigurationSetsJson():
         document.pop('_id')
         results.append(document)
     return results
+
+def getAllActiveConfigurationSetsJson():
+    data = []
+    with configSetLock:
+        try:
+            for id,c in activeConfigurationSets.items():
+                if c.active:
+                    data.append({'id':id,'name': c.name,'description': c.description,'modules':c.modules,'connections':c.connections})
+        except KeyError:
+            pass
+    return data
 
 def updateConfigurationSet(id,configJson):
     isActive = getConfigurationSet(id).active

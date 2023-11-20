@@ -22,6 +22,18 @@ export const getAllConfigDetails = async () => {
 
 }
 
+export const getAllActiveConfigDetails = async () => {
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}configuration/active`;
+   const response = await axios.get(url,config);
+   if(log){
+      const prefix = '[configuration/getAllActiveConfigeDetails]';
+      console.log(prefix);
+      console.log('url: ', url);
+      console.log('response: ',response)
+   }
+   return response;
+}
+
 export const getConfigDetails = async (configId) => {
 
   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}configuration/${configId}`;
@@ -76,12 +88,24 @@ export const updateConfig= async(id,configData) => {
      }
   });
   if(log) {
-     const prefix = '[modules/updateConfiguration]';
+     const prefix = '[configuration/updateConfiguration]';
      console.log(prefix);
      console.log('url: ',url);
      console.log('id:', id)
-     console.log('Module Data: ', configData)
+     console.log('Config Data: ', configData)
      console.log('response:',response)
   }
   return response;
+}
+
+export const deleteConfig = async(id) => {
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}configuration/${id}`;
+   const response = await axios.delete(url);
+   if(log) {
+      const prefix = '[configuration/deleteConfig]';
+      console.log(prefix);
+      console.log('url: ',url);
+      console.log('response:',response)
+   }
+   return response;
 }
