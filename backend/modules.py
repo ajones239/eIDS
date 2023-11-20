@@ -41,15 +41,6 @@ class Resource:
         self.data = None
 
 
-class Condition:
-
-    def __init__(self):
-        self.moduleId = None
-        self.outputField = None
-        self.comparison = None
-        self.data = None
-
-
 class Module(ABC):
 
     def __init__(self):
@@ -213,17 +204,35 @@ class IOModule(ABC):
         pass
 
 
-class ActionModule(ABC):
+class ActionModule(IOModule):
 
     def __init__(self):
         super(ActionModule, self).__init__()
 
-    @abstractmethod
-    def doAction(self):
+        self.conditions = []
+
+        self.operators = {
+            '=': lambda data, value: data == value,
+            '!=': lambda data, value: data == value,
+            'contains': lambda data, value: value in data
+        }
+
+    def addCondition(self, cond):
+        # ignore invalid operators
+        if cond['operator'] not in self.operators.keys():
+            return 
+        self.conditions.append(cond)
+
+    def addInput(self, moduleId, data):
+        for cond in self.conditions:
+            if self.operators[cond['operator']](str(data), cond['value']):
+                self.doAction()
+
+    def getOutput(self):
         pass
 
     @abstractmethod
-    def addCondition(self, cond):
+    def doAction(self):
         pass
 
 
