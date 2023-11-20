@@ -1,5 +1,6 @@
 import React, {useState,useEffect} from "react"
 import ModuleDetails from "@/components/moduledetails"
+import ModuleTable from "@/components/moduletable"
 import { getAllModuleDetails, getModuleDetails, addModule, addInputToModule } from "@/api/module";
 
 
@@ -135,7 +136,7 @@ export default function TestModule() {
 
 
   return (
-    <>
+    <div className="container">
      
       <h1>TestModule</h1>
       <div className="form-check">
@@ -218,12 +219,16 @@ export default function TestModule() {
 
       </div>
       <hr/>
-      <h3>Get all Modules</h3>
+      <h3>Get all Modules JSON</h3>
       <div>
         {allModule.map((module) => (
           <ModuleDetails key={module.id} module={module} display64={display64}/>
         ))}
       </div>
-    </>
+      <h3>Get all module Table</h3>
+      <div>
+        <ModuleTable modules={allModule} display64={false}/>
+      </div>
+    </div>
   )
 }

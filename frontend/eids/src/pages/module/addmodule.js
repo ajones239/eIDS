@@ -87,19 +87,19 @@ export default function AddModule() {
         <form>
           <div className="form-group">
             <label htmlFor="postModuleName">Name</label>
-            <input type="text" className="form-control" id="postModuleName" name="name" placeholder="Module Name" onChange={handlePostFormInputChange} value={postForm.name}/>
+            <input type="text" className="form-control" id="postModuleName" name="name" placeholder="Module Name" onChange={handlePostFormInputChange} value={postForm.name ?  postForm.name : ""}/>
           </div>
           <div className="form-group">
             <label htmlFor="postModuleDescription">Description</label>
-            <textarea className="form-control" id="postModuleDescription" name="description" placeholder="Module Description" rows="4" onChange={handlePostFormInputChange}  value={postForm.description}/>
+            <textarea className="form-control" id="postModuleDescription" name="description" placeholder="Module Description" rows="4" onChange={handlePostFormInputChange}  value={postForm.description ? postForm.description : ""}/>
           </div>
           <div className="form-group">
             <label htmlFor="postModuleName">type</label>
-            <input type="number" className="form-control" id="postModuleType" name="type" onChange={handlePostFormInputChange} value={postForm.type}/>
+            <input type="number" className="form-control" id="postModuleType" name="type" onChange={handlePostFormInputChange} value={postForm.type ? postForm.type : ""}/>
           </div>
           <div className="form-group">
             <label htmlFor="postModuleDependencies">Dependencies</label>
-            <input type="text" className="form-control" id="postModuleDependencies" name="dependencies" placeholder="Comma Delimitted Dependencies" onChange={handlePostFormInputChange} value={postForm.dependencies}/>
+            <input type="text" className="form-control" id="postModuleDependencies" name="dependencies" placeholder="Comma Delimitted Dependencies" onChange={handlePostFormInputChange} value={postForm.dependencies ? postForm.dependencies : ""}/>
           </div>
           <div className="form-group">
             <label htmlFor="postModuleImplementation">Implementation</label>

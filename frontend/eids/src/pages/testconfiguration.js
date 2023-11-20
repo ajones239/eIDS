@@ -107,7 +107,7 @@ export default function TestConfiguration() {
 
   return (
     <>
-      <div>
+      <div className="container">
         <h1>Test Configuration</h1>
         <h3>Get config by id</h3>
           <div>

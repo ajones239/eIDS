@@ -329,7 +329,7 @@ def startConfigurationSet(id):
     ]
 )
 def getAllWorkers():
-    return jsonify({'modules':controlplane.getAllWorkersModuleID()})
+    return jsonify(controlplane.getAllWorkersModuleID())
 
 @api.route('/global', methods=['GET'])
 @swagger_metadata(

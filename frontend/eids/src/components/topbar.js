@@ -4,6 +4,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Dropdown, ButtonGroup } from 'react-bootstrap';
+import { Fragment } from 'react';
 
 function ModuleLinks(){
   return (
@@ -30,8 +31,9 @@ function ConfigLinks(){
           <Nav.Link href="/config" className='pe-0'>Config</Nav.Link>
           <Dropdown.Toggle split id="top-nav-config-dropdown"/>
           <Dropdown.Menu>
-            <Nav.Link href="/testmodule">TestModule</Nav.Link>
-            <Nav.Link href="/testconfiguration">TestConfig</Nav.Link>
+            <Nav.Link href="/config/addconfig">Add Configs</Nav.Link>
+            <Nav.Link href="/config/updateconfig">Update Configs</Nav.Link>
+            <Nav.Link href="/config/deleteconfig">Delete Configs</Nav.Link>
           </Dropdown.Menu>
         </Dropdown>
         
@@ -39,6 +41,20 @@ function ConfigLinks(){
 
   )
 }
+function TestLinks(){
+  const check = process.env.NEXT_PUBLIC_IS_TEST_ENV === 'true' ? true : false
+  if(check){
+    return (
+      <>
+        <Nav.Link href="/testmodule">TestModule</Nav.Link>
+        <Nav.Link href="/testconfiguration">TestConfig</Nav.Link>
+      </>
+    )
+
+  }
+
+}
+
 export default function Topbar({ Component, pageProps }) {
 
 
@@ -52,10 +68,16 @@ export default function Topbar({ Component, pageProps }) {
             <Nav.Link href="/">Dashboard</Nav.Link>
             <Nav.Link href="/analytics">Analytics</Nav.Link>
             <Nav.Link href="/logs">Logs</Nav.Link>
-            <Nav.Link href="/configuration">Config</Nav.Link>
             <ModuleLinks/>
             <ConfigLinks/>
-            
+            <TestLinks/>
+            {/* { 
+              (() => {
+                  if(true){
+                    return (<TestLinks/>) 
+                  }
+              })()
+            } */}
           </Nav>
         </Navbar.Collapse>
       </Container>

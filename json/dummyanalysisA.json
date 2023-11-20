@@ -1,0 +1,9 @@
+{
+   "name": "DummyAnalysisA",
+   "description": "THREADEDA dummy analysis module that inputs a numpy array and outputs a string. Messages are printed and logged.",
+   "type": 3,
+   "dependencies": [
+         "numpy"
+   ],
+   "implementation": "Y2xhc3MgRHVtbXlBbmFseXNpc0EobW9kdWxlcy5Nb2R1bGUsIG1vZHVsZXMuSU9Nb2R1bGUpOgoKICAgIGRlZiBfX2luaXRfXyhzZWxmKToKICAgICAgICBzdXBlcihEdW1teUFuYWx5c2lzQSwgc2VsZikuX19pbml0X18oKQogICAgICAgIHNlbGYuc3RyZWFtID0gRmFsc2UKICAgICAgICBzZWxmLmRhdGFGcmVxdWVuY3kgPSBtb2R1bGVzLkRhdGFGcmVxdWVuY3kuT05FX1RJTUVfQUNDRVNTCgogICAgZGVmIGdldE91dHB1dChzZWxmKToKICAgICAgICByZXR1cm4gJ3NvbWUgb3V0cHV0JwoKICAgIGRlZiBhZGRJbnB1dChzZWxmLCBtb2R1bGVJZCwgZGF0YSk6CiAgICAgICAgc2VsZi5zZXRIYXNPdXRwdXQoVHJ1ZSkKICAgICAgICBwcmludCgnRHVtbXlBbmFseXNpcyByZWNlaXZpbmcgZGF0YScpCiAgICAgICAgcGFzcwoKICAgIGRlZiBzdGFydChzZWxmKToKICAgICAgICBwYXNzCgogICAgZGVmIHN0b3Aoc2VsZik6CiAgICAgICAgcGFzcwoK"
+}

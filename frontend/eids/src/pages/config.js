@@ -1,10 +1,9 @@
 import React, {useState,useEffect} from "react"
 import ModuleDetails from "@/components/moduledetails"
-import { getAllModuleDetails, getModuleDetails, addModule, addInputToModule, getWorkingModules } from "@/api/module";
+import { getAllModuleDetails, getModuleDetails, addModule, addInputToModule } from "@/api/module";
 import ModuleTable from "@/components/moduletable";
-import ModuleTableActive from "@/components/moduletableactive";
 
-export default function Module() {
+export default function Config() {
   //display either base64 or regular text when getting module details
   const [display64, setDisplay64] = useState(false);
   const handleDisplay64Check = (event) => {
@@ -48,26 +47,11 @@ export default function Module() {
     }
   }
 
-    //get all active modules
-    const [allActiveModule, setAllActiveModule] = useState([]);
-
-    const fetchAllActiveModuleDetails = async () => {
-      try{
-        const response = await getWorkingModules();
-        console.log(response.data)
-        setAllActiveModule(response.data)
-      } catch (error) {
-        setAllActiveModule(null)
-      }
-    }
-  
-
   //refresh page with new data
   useEffect(() => {
     async function fetchData() {
       await fetchModuleDetails(moduleId);
       await fetchAllModuleDetails();
-      await fetchAllActiveModuleDetails();
     }
    fetchData();
 
@@ -77,16 +61,13 @@ export default function Module() {
     <div className="container">
      
       <h1>Current Modules</h1>
-      <div>
-        <ModuleTableActive modules={allActiveModule}/>
-      </div>
-      <hr/>
       <div className="form-check">
         <label className="form-check-label" htmlFor="display64Check">
           Display 64?
         </label>
         <input className="form-check-input" type="checkbox" value="" id="display64Check" onChange={handleDisplay64Check}/>
       </div>
+      <hr/>
       <div>
         <div className="form-outline mb-3">
           <label className="form-label">

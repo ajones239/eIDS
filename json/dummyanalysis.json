@@ -1,5 +1,5 @@
 {
-   "name": "DummyAnalysis",
+   "name": "DummyAnalysisThread",
    "description": "A dummy analysis module that inputs a numpy array and outputs a string. Messages are printed and logged.",
    "type": 3,
    "dependencies": [

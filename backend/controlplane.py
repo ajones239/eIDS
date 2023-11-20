@@ -93,8 +93,8 @@ def updateModule(id,moduleJson):
     runningConfigSets = []
     with configSetLock:
         for c in activeConfigurationSets:
-            if id in c.modules and c.active == True:
-                runningConfigSets.insert(c.id)
+            if id in activeConfigurationSets[c].modules and activeConfigurationSets[c].active == True:
+                runningConfigSets.insert(activeConfigurationSets[c].id)
     #stop module
     stopModule(id)
     #unload module
@@ -137,8 +137,8 @@ def stopModule(id):
     #check configuration sets first and stop workers
     with configSetLock:
         for c in activeConfigurationSets:
-            if id in c.modules:
-                stopConfigurationSet(c.id)
+            if id in activeConfigurationSets[c].modules:
+                stopConfigurationSet(activeConfigurationSets[c].id)
     
     #redundant stop for rogue workers
     stopWorker(id)
@@ -192,7 +192,8 @@ def updateConfigurationSet(id,configJson):
     isActive = getConfigurationSet(id).active
     stopConfigurationSet(id)
     unloadConfigurationSet(id)
-    moduleCollection.update_one({"_id":ObjectId(id)},{"$set": configJson})
+    print("Got to here")
+    configSetCollection.update_one({"_id":ObjectId(id)},{"$set": configJson})
     loadConfigurationSet(id)
 
     if isActive:
@@ -261,7 +262,7 @@ def stopConfigurationSet(id):
 
     #stop workers first, will pbreak other running configs running the same workers
     #reverse sort module by level 
-    configSet.modules.sort(key=lambda t: t['level'], reversed=True)
+    configSet.modules.sort(key=lambda t: t['level'], reverse=True)
     with moduleLock:
         for m in configSet.modules:
             stopWorker(m['id'])
@@ -281,9 +282,11 @@ def getAllWorkersModuleID():
     data = []
     with workerLock:
         try:
-            data.append(activeWorkers.keys())
+            for id in activeWorkers.keys():
+                m = moduleCollection.find_one({'_id':ObjectId(id)})
+                data.append({'id': id, 'name': m['name'], 'description':m['description']})
         except KeyError:
-            pass    
+            pass
     return data
 
 def printGlobals():

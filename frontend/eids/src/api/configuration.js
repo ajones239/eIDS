@@ -67,3 +67,21 @@ export const addConfig = async(configurationData) => {
   }
   return response;
 }
+
+export const updateConfig= async(id,configData) => {
+  const url = `${process.env.NEXT_PUBLIC_ENDPOINT}configuration/${id}/update`;
+  const response = await axios.put(url, configData, {
+     headers: {
+        'Content-type': 'application/json'
+     }
+  });
+  if(log) {
+     const prefix = '[modules/updateConfiguration]';
+     console.log(prefix);
+     console.log('url: ',url);
+     console.log('id:', id)
+     console.log('Module Data: ', configData)
+     console.log('response:',response)
+  }
+  return response;
+}
