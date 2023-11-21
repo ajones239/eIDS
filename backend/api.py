@@ -343,6 +343,25 @@ def startConfigurationSet(id):
         resp = jsonify({'error': e.message})
         resp.status_code = 400
         return resp
+    
+
+@api.route('/configuration/<id>/stop', methods=['POST'])
+@swagger_metadata(
+    summary='Stop a configuration set',
+    description='Stops all active workers from a config sets and related config sets using same workers.',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def stopConfigurationSet(id):
+    try:
+        controlplane.stopConfigurationSet(id)
+        return Response(status=204)
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
 
 #endregion
 

@@ -17,8 +17,8 @@ export default function ModuleTableActive({modules}){
    // else {
    //    test = module
    // }
-   console.log("Inside moduletableactive")
-  console.log(modules)
+//    console.log("Inside moduletableactive")
+//   console.log(modules)
    return (
       <>
          <Table>
@@ -31,14 +31,16 @@ export default function ModuleTableActive({modules}){
             </thead>
             <tbody>
                {
-                  modules.map((module) => (
-                    <tr key={module.id}>
-                        <td>{module.name}</td>
-                        <td>{module.description}</td>
-                        <td>{module.id}</td>
-
-                    </tr> 
-                  ))
+                  modules && 
+                              modules.map((module) => (
+                              <tr key={module.id}>
+                                    <td>{module.name}</td>
+                                    <td>{module.description}</td>
+                                    <td>{module.id}</td>
+            
+                              </tr> 
+                              ))
+                  
                }
             </tbody>
          </Table>

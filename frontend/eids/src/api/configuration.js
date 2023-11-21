@@ -62,6 +62,21 @@ export const startConfig = async(configurationId) => {
   return response;
 }
 
+export const stopConfig = async(configurationId) => {
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}configuration/${configurationId}/stop`;
+   console.log(configurationId);
+   const response = await axios.post(url, config);
+   if(log) {
+      const prefix = '[configuration/stopConfig]';
+      console.log(prefix);
+      console.log('url: ',url);
+      console.log('Configuration Id: ', configurationId)
+      console.log('response:',response)
+   }
+   return response;
+ }
+ 
+ 
 
 export const addConfig = async(configurationData) => {
   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}configuration`;

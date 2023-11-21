@@ -2,9 +2,11 @@ import 'react-json-view-lite/dist/index.css';
 import React from "react";
 import { Table } from "react-bootstrap";
 import ModuleDetailsNameLinkModal from './moduledetailsnamelinkmodal';
-export default function ConfigTableActive({configs}){
+export default function ConfigTable({configs}){
 
    const stringifyModules = (modules) => {
+
+
       return (
          <>
             {
@@ -16,7 +18,6 @@ export default function ConfigTableActive({configs}){
          </>
       )
    }
-
 
    return (
       <>

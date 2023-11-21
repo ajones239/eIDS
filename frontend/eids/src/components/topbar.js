@@ -16,6 +16,7 @@ function ModuleLinks(){
             <Nav.Link href="/module/addmodule">Add Modules</Nav.Link>
             <Nav.Link href="/module/updatemodule">Update Modules</Nav.Link>
             <Nav.Link href="/module/deletemodule">Delete Modules</Nav.Link>
+            
 
           </Dropdown.Menu>
         </Dropdown>
@@ -34,6 +35,9 @@ function ConfigLinks(){
             <Nav.Link href="/config/addconfig">Add Configs</Nav.Link>
             <Nav.Link href="/config/updateconfig">Update Configs</Nav.Link>
             <Nav.Link href="/config/deleteconfig">Delete Configs</Nav.Link>
+            <Nav.Link href="/config/startconfig">Start Configs</Nav.Link>
+            <Nav.Link href="/config/stopconfig">Stop Configs</Nav.Link>
+
           </Dropdown.Menu>
         </Dropdown>
         
