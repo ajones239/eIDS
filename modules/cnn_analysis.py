@@ -33,7 +33,7 @@ class CNNAnalysis(modules.Module, modules.IOModule):
         super(CNNAnalysis, self).__init__()
 
     def getOutput(self):
-        return self.getOuputData()
+        return self.getOutputData()
 
     def addInput(self, moduleId, data):
         if data is None:
@@ -124,6 +124,7 @@ class CNNAnalysis(modules.Module, modules.IOModule):
                 max_prediction = predictions[0, class_label]
                 max_class_label = class_label
 
+        self.setOutput(max_class_label)
         return max_class_label
 
 # src paths

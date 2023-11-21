@@ -259,6 +259,10 @@ def startConfigurationSet(id):
     # sort by level
     configSet.modules.sort(key=lambda t: t['level'])
 
+    for cond in configSet.actionConditions:
+        module = getModule(cond['actionModule'])
+        module.addCondition(cond)
+
     configureConnections(configSet.connections)
     for m in configSet.modules:
         with moduleLock:
