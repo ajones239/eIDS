@@ -17,6 +17,10 @@ curl -v \
                 {
                     \"id\":\"$3\",
                     \"level\": 2
+                },
+                {
+                    \"id\":\"$4\",
+                    \"level\": 3
                 }
             ],
             \"connections\": [
@@ -27,6 +31,17 @@ curl -v \
                 {
                     \"out\": \"$2\",
                     \"in\": \"$3\"
+                },
+                {
+                    \"out\": \"$3\",
+                    \"in\": \"$4\"
+                }
+            ],
+            \"actionConditions\": [
+                {
+                    \"actionModule\": \"$4\",
+                    \"operator\": \"=\",
+                    \"value\": \"0\"
                 }
             ]
     }" http://localhost:5000/configuration

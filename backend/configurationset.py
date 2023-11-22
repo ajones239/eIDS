@@ -12,6 +12,7 @@ class ConfigurationSet:
         self.description = json.get('description')
         self.modules = json.get('modules')
         self.connections = json.get('connections')
+        self.actionConditions = json.get('actionConditions')
         self.active = False
 
 
