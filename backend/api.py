@@ -365,6 +365,28 @@ def stopConfigurationSet(id):
 
 #endregion
 
+#region graphdata
+
+@api.route('/graphdata/<id>', methods=['GET'])
+@swagger_metadata(
+    summary='Get all data from graph id',
+    description='Returns all graph data from id',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+                [{
+                    JSON depends on graph data,typically...
+                    "m_id": "module id",
+                    "g_id": "graph id",
+                    "x_value": value,
+                    "y_value": value,
+                    "date":created datetime()
+                }]''')
+    ]
+)
+def getAllGraphData(id):
+    return jsonify(controlplane.getAllGraphDataJson(id))
+#endregion
 
 #region worker
 

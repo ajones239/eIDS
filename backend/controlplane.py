@@ -14,6 +14,8 @@ import sys
 dbclient = MongoClient('mongodb://localhost:27017/')
 moduleCollection = dbclient['eIDS']['modules']
 configSetCollection = dbclient['eIDS']['configurations']
+graphDataCollection = dbclient['eIDS']['graphdata']
+
 
 activeModules = dict()
 activeConfigurationSets = dict()
@@ -291,6 +293,18 @@ def stopWorker(id):
         except KeyError:
             pass
 
+
+
+def getAllGraphDataJson(graphId):
+    #todo change find id into bson id 
+    cursor = graphDataCollection.find({"g_id":graphId})
+    results = []
+    for document in cursor:
+        # document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    print(results)
+    return results
 
     
 def getAllWorkersModuleID():

@@ -47,11 +47,14 @@ function ConfigLinks(){
 }
 function TestLinks(){
   const check = process.env.NEXT_PUBLIC_IS_TEST_ENV === 'true' ? true : false
+
   if(check){
     return (
       <>
         <Nav.Link href="/testmodule">TestModule</Nav.Link>
         <Nav.Link href="/testconfiguration">TestConfig</Nav.Link>
+        <Nav.Link href="/testgraph">TestGraph</Nav.Link>
+
       </>
     )
 
