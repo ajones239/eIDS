@@ -286,7 +286,9 @@ def stopConfigurationSet(id):
     configSet.modules.sort(key=lambda t: t['level'], reverse=True)
     with moduleLock:
         for m in configSet.modules:
-            stopWorker(m['id'])
+            stopModule(m['id'])
+            unloadModule(m['id'])
+
     
 
 def stopWorker(id):
