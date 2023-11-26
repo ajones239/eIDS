@@ -21,7 +21,7 @@ export default function TestGraph(){
       console.log(response.data)
       setGraphData(response.data)
     } catch (error) {
-      setGraphData({"Response":"None"})
+      setGraphData([])
     }
   }
 

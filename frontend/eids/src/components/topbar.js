@@ -54,6 +54,7 @@ function TestLinks(){
         <Nav.Link href="/testmodule">TestModule</Nav.Link>
         <Nav.Link href="/testconfiguration">TestConfig</Nav.Link>
         <Nav.Link href="/testgraph">TestGraph</Nav.Link>
+        <Nav.Link href="/testnode">TestNode</Nav.Link>
 
       </>
     )
