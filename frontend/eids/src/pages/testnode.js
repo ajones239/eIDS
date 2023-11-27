@@ -168,40 +168,15 @@ export default function TestModule() {
             <h3>Active Config</h3>
 
             <h4>Config 1</h4>
-            <div className={"container"} style={{ height: "25vh" }}>
+            <div className={"container"} style={{ height: "15vh", minHeight:"100px" }}>
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    connectionLineType={ConnectionLineType.SmoothStep}
-                    onNodeClick={handleShow}
-                    fitView
-                >
-                </ReactFlow>
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>
-                            ID:
-                            {nodeInfo.id ? nodeInfo.id : "No data found"}
-
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {nodeInfo?.data?.data ? nodeInfo.data.data : "No data found"}
-
-                    </Modal.Body>
-
-                </Modal>
-            </div>
-            <h4>Config 2</h4>
-            <div className={"container"} style={{ height: "25vh" }}>
-                <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
+                    // onNodesChange={onNodesChange}
+                    // onEdgesChange={onEdgesChange}
+                    nodesConnectable={false}
+                    nodesDraggable={false}
+                    panOnDrag={false}
                     onConnect={onConnect}
                     connectionLineType={ConnectionLineType.SmoothStep}
                     onNodeClick={handleShow}

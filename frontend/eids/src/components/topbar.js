@@ -69,7 +69,7 @@ export default function Topbar({ Component, pageProps }) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary" >
       <Container>
-        <Navbar.Brand href="#home">eIDS</Navbar.Brand>
+        <Navbar.Brand href="/">eIDS</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">

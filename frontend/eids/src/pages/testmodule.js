@@ -127,6 +127,7 @@ export default function TestModule() {
     async function fetchData() {
       await fetchModuleDetails(moduleId);
       await fetchAllModuleDetails();
+
     }
    fetchData();
 

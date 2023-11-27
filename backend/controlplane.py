@@ -40,6 +40,7 @@ def getModuleJson(id):
         raise modules.ModuleException('Invalid module ID ' + id)
     mjson['id'] = id
     mjson.pop('_id')
+    print("return ",mjson)
     return mjson
 
 
@@ -164,7 +165,7 @@ def getConfigurationSetJson(id):
     configjson = configSetCollection.find_one({'_id': ObjectId(id)})
     if configjson is None:
         raise configurationset.ConfigurationSetException('Invalid configuration set ID ' + id)
-    configjson[id] = id
+    configjson["id"] = id
     configjson.pop('_id')
     return configjson
 
