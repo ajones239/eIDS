@@ -90,7 +90,7 @@ export default function Config() {
           <ConfigTable configs={allConfig} />
          
       </div>
-      <ModuleDetailsNameLinkModal moduleId={"655c311197b2a99167f5482b"}/>
+      {/* <ModuleDetailsNameLinkModal moduleId={"655c311197b2a99167f5482b"}/> */}
     </div>
   )
 }

@@ -72,7 +72,6 @@ export default function NodeConfigGraph({ initnode,initedge }) {
 
   return (
     <div className="container">
-      <h3>Active Config</h3>
 
       <h4>Config 1</h4>
       <div className={"container"} style={{ height: "15vh", minHeight: "100px" }}>

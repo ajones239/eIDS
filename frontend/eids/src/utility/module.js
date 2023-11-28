@@ -25,8 +25,13 @@ export const addAllConfigModuleDetails = async (configin) => {
    if (configinput.modules) {
       for(const [index,element] of configin.modules.entries()){
          const data = await fetchModuleDetails(element.id);
-         configinput.modules[index] = { name: data.name, id: data.id, level: configinput.modules[index].level };
+         if(data){
+            configinput.modules[index] = { name: data.name, id: data.id, level: configinput.modules[index].level };
             console.log(configin.modules[index]);
+         }
+         else{
+            console.warn("No data found for modules in config")
+         }
       }
       // configin.modules.forEach((element, index) => {
       //    //get details

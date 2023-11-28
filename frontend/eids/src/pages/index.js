@@ -1,9 +1,13 @@
 import NodeConfigGraph from "@/components/nodeconfiggraph";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { configToDagre } from "@/utility/configToDagre";
 import { JsonView, darkStyles } from "react-json-view-lite";
 import 'react-json-view-lite/dist/index.css';
 import { addAllConfigModuleDetails } from "@/utility/module";
+import { set } from "date-fns";
+import { getAllActiveConfigDetails, getAllConfigDetails, getConfigDetails } from "@/api/configuration";
+import { setConfig } from "next/config";
+import { ComputeShader } from "@babylonjs/core";
 
 // const config =  addModuleDataToConfig();
 // const data = configToDagre(config)
@@ -43,14 +47,36 @@ export default function Home() {
   // const [data, setData] = useState()
 
   const fetchModConfig = async (initConfig) => {
-    try{
+    try {
       const data = await addAllConfigModuleDetails(initConfig);
-      setModConfig(data)
+      console.log("new data")
+      console.warn(data)
+      return data
 
     } catch (error) {
-      setModConfig({"Response":"None"})
+      setModConfig({ "Response": "None" })
     }
   }
+
+  
+  const fetchAllModConfig = async (arrConfig) => {
+    try {
+      var temp = []
+      console.log("conf")
+      console.log(arrConfig)
+      for(const conf of arrConfig){
+        temp.push(await fetchModConfig(conf))
+      }
+      console.log("arr mc")
+      console.warn(temp)
+      return temp
+
+    } catch (error) {
+      setModConfig({ "Response": "None" })
+    }
+  }
+
+
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -62,39 +88,71 @@ export default function Home() {
   // }, []);
   // console.log(data)
 
-    const [initConfig, setInitConfig] = useState(JSON.parse(exconfig))
-    const [modConfig,setModConfig] = useState()
-    const [dagreData, setDagreData] = useState()
-    const [data,setData] = useState()
-
-    useEffect(() => {
-      async function fetchdata(){
-        await fetchModConfig(initConfig)
-      }
- 
-      fetchdata();
-      // const dD = configToDagre(modC)
-      // setDagreData(dD)
-      // setData(dD)
-
-    },[initConfig])
-    
-  //fetch all module details from list of configs
-
-  // useEffect(() => {
-  //   if(initConfig){
-  //     setModConfig(addAllConfigModuleDetails(initConfig))
-  //   }
-  // },[initConfig])
-
+  const [initConfig, setInitConfig] = useState([])
+  const [modConfig, setModConfig] = useState([])
+  const [dagreData, setDagreData] = useState()
+  const [data, setData] = useState([])
   useEffect(() => {
-    if(modConfig){
-      setData(configToDagre(modConfig))
-      console.log("Mod Config=============")
-      console.log(modConfig)
+    async function fetchdata() {
+      const data = await getAllActiveConfigDetails()
+      setInitConfig(data.data)
+      console.log(data.data)
 
     }
-  },[modConfig])
+    fetchdata();
+  }, [])
+
+  useEffect(() => {
+    let active = true;
+    async function fetchdata() {
+      if(active){
+
+        if(initConfig){
+
+          const data = await fetchAllModConfig(initConfig);
+          setModConfig(data);
+        }
+      }
+
+
+
+    }
+    fetchdata();
+    // const dD = configToDagre(modC)
+    // setDagreData(dD)
+    // setData(dD)
+    return (() => active = false)
+  }, [initConfig])
+
+
+
+
+
+  useEffect(() => {
+
+    let active = true
+    async function addCoordinates() {
+      if (active) {
+        if (modConfig) {
+          console.log("Mod Config=============")
+          console.log(modConfig)
+          var temp = []
+          for(const mc of modConfig){
+            temp.push(configToDagre(mc))
+
+          }
+          console.warn("data")
+          console.warn(temp)
+  
+          setData(temp)
+          // setData(configToDagre(modConfig))
+        }
+      }
+
+    }
+    addCoordinates();
+    return (() => active = false)
+  }, [modConfig])
 
   // useEffect(()=>{
   //   if(data){
@@ -104,12 +162,26 @@ export default function Home() {
   //   }
   // },[data])
 
+  const viewActiveConfigNodes = (data) => {
+    console.log(data)
+    if(Array.isArray(data) && data.length > 0){
+      return (
+        data.map((d) => (
+          <NodeConfigGraph initnode={d.nodes} initedge={d.edges} />
+        ))
+      )
+    }
+    else {
+      return (<p>None</p>)
+    }
+  };
 
+  return (
+    <div className="container">
+      <h3>Active Config</h3>
 
-    return (
-      <div class="container">
-        {data && modConfig && <NodeConfigGraph initnode={data.nodes} initedge={data.edges}/>}
-        {modConfig && <JsonView data={JSON.parse(exconfig)} style={darkStyles}/>}
-      </div>
-    )
+      {data && modConfig && viewActiveConfigNodes(data)}
+
+    </div>
+  )
 }

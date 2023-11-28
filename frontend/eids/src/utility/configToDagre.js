@@ -8,6 +8,7 @@ export const configToDagre = (config) => {
   if(!config){
     return ""
   }
+  console.info(config)
   const exconfig = `{
     "actionConditions": [],
     "connections": [
