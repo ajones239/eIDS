@@ -22,7 +22,7 @@ export default function Config() {
       console.log(response.data)
       setConfig(response.data)
     } catch (error) {
-      setConfig({ "Response": "None" })
+      // setConfig({ "Response": "None" })
     }
 
   }
@@ -49,7 +49,7 @@ export default function Config() {
       console.log(response.data)
       setAllConfig(response.data)
     } catch (error) {
-      setAllConfig({ "Response": "None" })
+      // setAllConfig({ "Response": "None" })
     }
   }
 
@@ -87,7 +87,7 @@ export default function Config() {
       <h3>Get all configs</h3>
       <div>
 
-          <ConfigTable configs={allConfig} />
+          {allConfig && <ConfigTable configs={allConfig} />}
          
       </div>
       {/* <ModuleDetailsNameLinkModal moduleId={"655c311197b2a99167f5482b"}/> */}

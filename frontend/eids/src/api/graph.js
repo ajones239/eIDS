@@ -22,9 +22,11 @@ export const getGraphData = async (graphId) => {
 }
 
 
-export const getAttackGraphData = async (groupBy) => {
+export const getAttackGraphData = async (groupBy="t") => {
 
-   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}graphdata/attacks/${groupBy}`;
+   // const url = `${process.env.NEXT_PUBLIC_ENDPOINT}graphdata/attacks/${groupBy}`;
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}graphdata/attacks/t`;
+
    const response = await axios.get(url,config);
    if(log){
       const prefix = '[modules/getAttackGraphData]';

@@ -96,6 +96,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchdata() {
       const data = await getAllActiveConfigDetails()
+      // const data = {data: []}
       setInitConfig(data.data)
       console.log(data.data)
 
@@ -134,7 +135,7 @@ export default function Home() {
     let active = true
     async function addCoordinates() {
       if (active) {
-        if (modConfig) {
+        if (modConfig ) {
           console.log("Mod Config=============")
           console.log(modConfig)
           var temp = []
