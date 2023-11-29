@@ -8,6 +8,7 @@ import { set } from "date-fns";
 import { getAllActiveConfigDetails, getAllConfigDetails, getConfigDetails } from "@/api/configuration";
 import { setConfig } from "next/config";
 import { ComputeShader } from "@babylonjs/core";
+import TestGraph from "./testgraph";
 
 // const config =  addModuleDataToConfig();
 // const data = configToDagre(config)
@@ -172,7 +173,7 @@ export default function Home() {
       )
     }
     else {
-      return (<p>None</p>)
+      return (<p>No Active Configs Running</p>)
     }
   };
 
@@ -182,6 +183,9 @@ export default function Home() {
 
       {data && modConfig && viewActiveConfigNodes(data)}
 
+      <h3 className="text-center">Attacks By Date</h3>
+      <TestGraph/>
     </div>
+    
   )
 }

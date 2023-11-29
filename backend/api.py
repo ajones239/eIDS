@@ -386,6 +386,27 @@ def stopConfigurationSet(id):
 )
 def getAllGraphData(id):
     return jsonify(controlplane.getAllGraphDataJson(id))
+
+@api.route('/graphdata/attacks/<groupBy>', methods=['GET'], defaults={'groupBy': None})
+@swagger_metadata(
+    summary='Get all attack data by date',
+    description='Returns aggregate attack date',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+                [{
+                    JSON depends on graph data,typically...
+                    "m_id": "module id",
+                    "g_id": "graph id",
+                    "x_value": value,
+                    "y_value": value,
+                    "date":created datetime()
+                }]''')
+    ]
+)
+def getTotalAttacksGraphData(groupBy):
+    return jsonify(controlplane.getTotalAttackGraphDataJson(groupBy))
+
 #endregion
 
 #region worker

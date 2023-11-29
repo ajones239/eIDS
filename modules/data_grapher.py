@@ -38,4 +38,4 @@ class DataGrapher(modules.Module, modules.IOModule):
                     break
             sleep(4)
             print("Updating Data....")
-            self.db.update_one({'g_id':"graph_id2",'x_value': datetime.datetime(2023, 11, 21, 0, 0)},{"$inc":{"y_value":1}},upsert=True)
+            self.db.insert_one({'g_id':"graph_id2",'x_value': datetime.datetime.utcnow(),'y_value':1})

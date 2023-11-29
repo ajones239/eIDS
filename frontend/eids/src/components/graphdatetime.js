@@ -32,8 +32,8 @@ import {
        responsive: true,
        plugins: {
          title: {
-            display: true,
-            text: "Test Graph from MongoDB"
+            display: false,
+            text: "Attacks Detected By Date"
          }
       },
       scales: {

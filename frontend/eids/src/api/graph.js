@@ -20,3 +20,18 @@ export const getGraphData = async (graphId) => {
    return response;
 
 }
+
+
+export const getAttackGraphData = async (groupBy) => {
+
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}graphdata/attacks/${groupBy}`;
+   const response = await axios.get(url,config);
+   if(log){
+      const prefix = '[modules/getAttackGraphData]';
+      console.log(prefix);
+      console.log('url: ', url);
+      console.log('response: ',response)
+   }
+   return response;
+
+}

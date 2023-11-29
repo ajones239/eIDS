@@ -1,4 +1,4 @@
-import { getGraphData } from "@/api/graph";
+import { getAttackGraphData, getGraphData } from "@/api/graph";
 import GraphDateTime from "@/components/graphdatetime";
 import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
@@ -17,7 +17,7 @@ export default function TestGraph(){
 
   const fetchAllGraphData = async (graphDataId) => {
     try{
-      const response = await getGraphData(graphDataId);
+      const response = await getAttackGraphData(graphDataId);
       console.log(response.data)
       setGraphData(response.data)
     } catch (error) {

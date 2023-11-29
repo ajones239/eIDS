@@ -301,6 +301,47 @@ def stopWorker(id):
             pass
 
 
+def getTotalAttackGraphDataJson(groupBy):
+    pipeline = [
+        {
+            "$group": {
+                "_id": {
+                    "year": {"$year": "$x_value"},
+                    "month": {"$month": "$x_value"},
+                    "day": {"$dayOfMonth": "$x_value"}
+                },
+                "total": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        },
+        {
+            "$project": {
+                "x_value": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": {
+                            "$dateFromParts": {
+                                "year": "$_id.year",
+                                "month": "$_id.month",
+                                "day": "$_id.day"
+                            }
+                        }
+                    }
+                },
+                "y_value": "$total"
+            }
+        }
+    ]
+    cursor = graphDataCollection.aggregate(pipeline=pipeline)
+    results = []
+    for document in cursor:
+        # document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    print(results)
+    return results
 
 def getAllGraphDataJson(graphId):
     #todo change find id into bson id 
