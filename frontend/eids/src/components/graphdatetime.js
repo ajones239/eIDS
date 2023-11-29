@@ -20,8 +20,8 @@ import {
  
  export default function GraphDateTime({graphData}){
     const mongdoDatesToGraphData = (graphdata) => {
-       console.log("MongotoData")
-       console.log(graphdata)
+      //  console.log("MongotoData")
+      //  console.log(graphdata)
        const data = graphdata.map((gp) => ({
           x: Date.parse(gp.x_value),
           y: gp.y_value
@@ -55,8 +55,8 @@ import {
    }
 
    // const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-   console.log("graphdata")
-   console.log(graphData)
+   // console.log("graphdata")
+   // console.log(graphData)
    const data = {
    
       

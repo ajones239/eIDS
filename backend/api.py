@@ -4,13 +4,20 @@ import modules
 
 from flask import Flask, Response, request, jsonify
 from flask_cors import CORS
+from flask_socketio import SocketIO,emit,send
 from swagger_gen.lib.wrappers import swagger_metadata
 from swagger_gen.swagger import Swagger
 
+import time
+import random
 
 api = Flask(__name__)
 api.debug = True
-CORS(api)
+#cross-origin bypass
+CORS(api,resources={r"/*":{"origins":"*"}})
+#websocket
+socketIO = SocketIO(api,cors_allowed_origins=[])
+
 
 
 @api.route('/health', methods=['POST', 'PUT', 'PATCH', 'GET', 'DELETE'])
@@ -440,6 +447,27 @@ def printGlobals():
 
 #endregion
 
+#region websocket
+# @socketIO.on('connect')
+# def test_connect(auth):
+#     # emit('graphdata',"hello")
+#     emit("graphdata",{"data":"this is reply"})
+@socketIO.on('connect')
+def handleConnect():
+    print("Client Connected")
+
+    # while True:
+        # time.sleep(1)
+    #     print("sending data")
+        # emit('graphdata',{'data': str(random.randint(0,10))})
+
+
+@socketIO.on('needattackdatadate')
+def handAttackDataDate(groupBy):
+    emit('graphdata',controlplane.getTotalAttackGraphDataJson(groupBy))
+
+
+#endregion
 swagger = Swagger(
     app=api,
     title='eIDS backend API',

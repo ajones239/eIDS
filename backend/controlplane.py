@@ -335,6 +335,7 @@ def getTotalAttackGraphDataJson(groupBy):
         }
     ]
     cursor = graphDataCollection.aggregate(pipeline=pipeline)
+
     results = []
     for document in cursor:
         # document['id'] = str(document["_id"])

@@ -5,7 +5,7 @@ const config = {
   },
   withCredentials: false
 }
-const log = true;
+const log = false;
 
 
 export const getAllConfigDetails = async () => {

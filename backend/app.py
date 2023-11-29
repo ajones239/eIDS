@@ -1,5 +1,5 @@
-from api import api
-
+from api import api, socketIO
+from flask_socketio import SocketIO
 import logging
 
 logger = logging.getLogger('application')
@@ -9,5 +9,6 @@ sh.setLevel(logging.DEBUG)
 sh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(sh)
 
-api.run()
+#api.run
+socketIO.run(api)
 
