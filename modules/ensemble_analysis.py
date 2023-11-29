@@ -59,6 +59,10 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         # Load the data
         df = data
 
+        # Dictionary mapping index to attack name
+        index_to_attack = {0:"Normal", 1: "Bot", 2: "BruteForce", 3: "DoS", 
+                   4: "Infiltration", 5: "PortScan", 6: "WebAttack"}
+        
         # Z-score normalization
         features = df.dtypes[df.dtypes != 'object'].index
         df[features] = df[features].apply(lambda x: (x - x.mean()) / x.std())
@@ -100,9 +104,9 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         # Calculate and print evaluation metrics - most common class = class of detected attack type
         class_output = np.bincount(y_predict).argmax()
 
-        # return class output
-        if np.max(np.bincount(y_predict)) == 0:
-            return 'No Attacks Detected'
-        else:
-            return class_output
+        # Use the dictionary to get the attack name
+        attack_name = index_to_attack.get(class_output, 'Unknown Attack')  # Default to 'Unknown Attack' if not found
+
+        # return attack name
+        return attack_name
 
