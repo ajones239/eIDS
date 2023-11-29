@@ -60,6 +60,10 @@ class CNNAnalysis(modules.Module, modules.IOModule):
         # Can use entire data too, remove nrows param when reading data
         n_samples = 10
 
+        # Define a dictionary to map class labels to their names
+        index_to_attack = {0: "Normal", 1: "Bot", 2: "BruteForce", 3: "DoS", 
+                   4: "Infiltration", 5: "PortScan", 6: "WebAttack"}
+
         if len(df) > n_samples:
             df = df.head(n_samples)
 
@@ -124,8 +128,11 @@ class CNNAnalysis(modules.Module, modules.IOModule):
                 max_prediction = predictions[0, class_label]
                 max_class_label = class_label
 
-        self.setOutput(max_class_label)
-        return max_class_label
+        # Map the class label to the attack name
+        attack_name = index_to_attack.get(max_class_label, 'Unknown Attack')
+        
+        self.setOutput(attack_name)
+        return attack_name
 
 # src paths
 # model_path = "/content/drive/MyDrive/Master's project stuff/SavedModels/resnet.h5"
