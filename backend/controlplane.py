@@ -340,7 +340,7 @@ def getTotalAttackGraphDataJson(groupBy):
         # document['id'] = str(document["_id"])
         document.pop('_id')
         results.append(document)
-    print(results)
+    # print(results)
     return results
 
 def getAllGraphDataJson(graphId):

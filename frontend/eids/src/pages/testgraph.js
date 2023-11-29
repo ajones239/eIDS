@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 
 const graphDataId="graph_id2"
+const TIME = 3000
 export default function TestGraph(){
    const [graphData,setGraphData] = useState()
 
@@ -26,15 +27,35 @@ export default function TestGraph(){
   }
 
 
-  //refresh page with new data
+
   useEffect(() => {
-    async function fetchData() {
-      await fetchAllGraphData(graphDataId);
+    // (1) define within effect callback scope
+    const fetchData = async () => {
+      try {
+        await fetchAllGraphData(graphDataId)
+      } catch (error) {
+        console.log(error);
+      }
+    };
+      
+    const id = setInterval(() => {
+      fetchData(); // <-- (3) invoke in interval callback
+    }, TIME);
+  
+    fetchData(); // <-- (2) invoke on mount
+  
+    return () => clearInterval(id);
+  }, [])
+  
+  // //refresh page with new data
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     await fetchAllGraphData(graphDataId);
 
-    }
-    fetchData();
+  //   }
+  //   fetchData();
 
-  },[]);
+  // },[]);
 
    return(
       
