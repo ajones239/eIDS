@@ -1,0 +1,29 @@
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date("2023-11-01T11:22:33"),y_value:1,date:new Date("2023-11-01T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date("2023-11-02T11:22:33"),y_value:1,date:new Date("2023-11-02T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date("2023-11-03T11:22:33"),y_value:1,date:new Date("2023-11-03T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date("2023-11-04T11:22:33"),y_value:1,date:new Date("2023-11-04T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date("2023-11-05T11:22:33"),y_value:1,date:new Date("2023-11-05T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date("2023-11-06T11:22:33"),y_value:1,date:new Date("2023-11-06T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date("2023-11-21T11:22:33"),y_value:1,date:new Date("2023-11-06T11:22:33")})
+
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id1",x_value:new Date(),y_value:1,date:new Date()})
+
+
+
+
+
+
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-01"),y_value:1,date:new Date("2023-11-01T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-02"),y_value:1,date:new Date("2023-11-02T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-03"),y_value:1,date:new Date("2023-11-03T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-04"),y_value:1,date:new Date("2023-11-04T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-05"),y_value:1,date:new Date("2023-11-05T11:22:33")})
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-06"),y_value:1,date:new Date("2023-11-06T11:22:33")})
+
+db.graphdata.insertOne({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-21"),y_value:2,date:new Date("2023-11-06T11:22:33")})
+db.graphdata.up({m_id:"module_id1",g_id:"graph_id2",x_value:new Date("2023-11-21"),y_value:2,date:new Date("2023-11-06T11:22:33")})
+
+
+db.graphdata.updateOne({"$and": [{g_id:"graph_id2"},{x_value:new Date("2023-11-21T00:00:00.000Z")}]},{"$inc":{y_value:1}},upsert=true)
+
+db.graphdata.find({"$and": [{g_id:"graph_id2"},{x_value:new Date("2023-11-21T00:00:00.000Z")}]})

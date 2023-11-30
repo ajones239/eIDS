@@ -343,9 +343,71 @@ def startConfigurationSet(id):
         resp = jsonify({'error': e.message})
         resp.status_code = 400
         return resp
+    
+
+@api.route('/configuration/<id>/stop', methods=['POST'])
+@swagger_metadata(
+    summary='Stop a configuration set',
+    description='Stops all active workers from a config sets and related config sets using same workers.',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def stopConfigurationSet(id):
+    try:
+        controlplane.stopConfigurationSet(id)
+        return Response(status=204)
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
 
 #endregion
 
+#region graphdata
+
+@api.route('/graphdata/<id>', methods=['GET'])
+@swagger_metadata(
+    summary='Get all data from graph id',
+    description='Returns all graph data from id',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+                [{
+                    JSON depends on graph data,typically...
+                    "m_id": "module id",
+                    "g_id": "graph id",
+                    "x_value": value,
+                    "y_value": value,
+                    "date":created datetime()
+                }]''')
+    ]
+)
+def getAllGraphData(id):
+    return jsonify(controlplane.getAllGraphDataJson(id))
+
+@api.route('/graphdata/attacks/<groupBy>', methods=['GET'], defaults={'groupBy': None})
+@swagger_metadata(
+    summary='Get all attack data by date',
+    description='Returns aggregate attack date',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+                [{
+                    JSON depends on graph data,typically...
+                    "m_id": "module id",
+                    "g_id": "graph id",
+                    "x_value": value,
+                    "y_value": value,
+                    "date":created datetime()
+                }]''')
+    ]
+)
+def getTotalAttacksGraphData(groupBy):
+    return jsonify(controlplane.getTotalAttackGraphDataJson(groupBy))
+
+#endregion
 
 #region worker
 

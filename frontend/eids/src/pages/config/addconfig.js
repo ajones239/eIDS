@@ -10,7 +10,7 @@ export default function AddConfig() {
   const handlePostFormConfigInputChange = (event) => {
     const name = event.target.name;
     let value = null;
-    if (name === "modules" || name === "connections") {
+    if (name === "modules" || name === "connections" || name === "actionConditions") {
       try {
         value = JSON.parse(event.target.value);
         
@@ -87,6 +87,10 @@ export default function AddConfig() {
               <div className="form-group">
                 <label htmlFor="postConfigConnections">Connections</label>
                 <input type="text" className="form-control" id="postConfigConnections" name="connections" placeholder='JSON Array Form [{"out":"moduleID"(str),"in":"moduleID"(str)}]' onChange={handlePostFormConfigInputChange} value={postFormConfig.connections ? typeof(postFormConfig.connections) === 'string' ? postFormConfig.connections : JSON.stringify(postFormConfig.connections) : ""}/>
+              </div>
+              <div className="form-group">
+                <label htmlFor="postConfigActionConditions">ActionConditions</label>
+                <input type="text" className="form-control" id="postConfigActionConditions" name="actionConditions" placeholder='JSON Array Form [{"actionModule":"moduleId"(str),"operator":str,"value":str}]' onChange={handlePostFormConfigInputChange} value={postFormConfig.actionConditions ? typeof(postFormConfig.actionConditions) === 'string' ? postFormConfig.actionConditions : JSON.stringify(postFormConfig.actionConditions) : ""}/>
               </div>
               <button type="submit" className="btn btn-primary" onClick={handlePostFormConfigSubmit}>Submit</button>
 

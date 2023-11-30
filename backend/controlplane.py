@@ -14,6 +14,8 @@ import sys
 dbclient = MongoClient('mongodb://localhost:27017/')
 moduleCollection = dbclient['eIDS']['modules']
 configSetCollection = dbclient['eIDS']['configurations']
+graphDataCollection = dbclient['eIDS']['graphdata']
+
 
 activeModules = dict()
 activeConfigurationSets = dict()
@@ -38,6 +40,7 @@ def getModuleJson(id):
         raise modules.ModuleException('Invalid module ID ' + id)
     mjson['id'] = id
     mjson.pop('_id')
+    print("return ",mjson)
     return mjson
 
 
@@ -162,7 +165,7 @@ def getConfigurationSetJson(id):
     configjson = configSetCollection.find_one({'_id': ObjectId(id)})
     if configjson is None:
         raise configurationset.ConfigurationSetException('Invalid configuration set ID ' + id)
-    configjson[id] = id
+    configjson["id"] = id
     configjson.pop('_id')
     return configjson
 
@@ -284,7 +287,9 @@ def stopConfigurationSet(id):
     configSet.modules.sort(key=lambda t: t['level'], reverse=True)
     with moduleLock:
         for m in configSet.modules:
-            stopWorker(m['id'])
+            stopModule(m['id'])
+            unloadModule(m['id'])
+
     
 
 def stopWorker(id):
@@ -295,6 +300,59 @@ def stopWorker(id):
         except KeyError:
             pass
 
+
+def getTotalAttackGraphDataJson(groupBy):
+    pipeline = [
+        {
+            "$group": {
+                "_id": {
+                    "year": {"$year": "$x_value"},
+                    "month": {"$month": "$x_value"},
+                    "day": {"$dayOfMonth": "$x_value"}
+                },
+                "total": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        },
+        {
+            "$project": {
+                "x_value": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": {
+                            "$dateFromParts": {
+                                "year": "$_id.year",
+                                "month": "$_id.month",
+                                "day": "$_id.day"
+                            }
+                        }
+                    }
+                },
+                "y_value": "$total"
+            }
+        }
+    ]
+    cursor = graphDataCollection.aggregate(pipeline=pipeline)
+    results = []
+    for document in cursor:
+        # document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    # print(results)
+    return results
+
+def getAllGraphDataJson(graphId):
+    #todo change find id into bson id 
+    cursor = graphDataCollection.find({"g_id":graphId})
+    results = []
+    for document in cursor:
+        # document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    print(results)
+    return results
 
     
 def getAllWorkersModuleID():

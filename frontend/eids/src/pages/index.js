@@ -1,60 +1,192 @@
-import React from "react";
-import { FreeCamera, Vector3, HemisphericLight, MeshBuilder } from "@babylonjs/core";
-import SceneComponent from "@/components/scenecomponent";// uses above component in same directory
-// import SceneComponent from 'babylonjs-hook'; // if you install 'babylonjs-hook' NPM.
-// Dashboard page
-// import "./App.css";
+import NodeConfigGraph from "@/components/nodeconfiggraph";
+import React, { use, useEffect, useState } from "react";
+import { configToDagre } from "@/utility/configToDagre";
+import { JsonView, darkStyles } from "react-json-view-lite";
+import 'react-json-view-lite/dist/index.css';
+import { addAllConfigModuleDetails } from "@/utility/module";
+import { set } from "date-fns";
+import { getAllActiveConfigDetails, getAllConfigDetails, getConfigDetails } from "@/api/configuration";
+import { setConfig } from "next/config";
+import { ComputeShader } from "@babylonjs/core";
+import TestGraph from "./testgraph";
 
-let box;
-
-const onSceneReady = (scene) => {
-  // This creates and positions a free camera (non-mesh)
-  const camera = new FreeCamera("camera1", new Vector3(0, 5, -10), scene);
-
-  // This targets the camera to scene origin
-  camera.setTarget(Vector3.Zero());
-
-  const canvas = scene.getEngine().getRenderingCanvas();
-
-  // This attaches the camera to the canvas
-  camera.attachControl(canvas, true);
-
-  // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-  const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-
-  // Default intensity is 1. Let's dim the light a small amount
-  light.intensity = 0.7;
-
-  // Our built-in 'box' shape.
-  box = MeshBuilder.CreateBox("box", { size: 2 }, scene);
-
-  // Move the box upward 1/2 its height
-  box.position.y = 1;
-
-  // Our built-in 'ground' shape.
-  MeshBuilder.CreateGround("ground", { width: 6, height: 6 }, scene);
-};
-
-/**
- * Will run on every frame render.  We are spinning the box on y-axis.
- */
-const onRender = (scene) => {
-  if (box !== undefined) {
-    const deltaTimeInMillis = scene.getEngine().getDeltaTime();
-
-    const rpm = 10;
-    box.rotation.y += (rpm / 60) * Math.PI * 2 * (deltaTimeInMillis / 1000);
-  }
-};
+// const config =  addModuleDataToConfig();
+// const data = configToDagre(config)
 
 
-
+const exconfig = `{
+  "actionConditions": [],
+  "connections": [
+      {
+          "in": "655a57ae2c886846999cb16f",
+          "out": "65629b2384fb109fbc3ed521"
+      },
+      {
+          "in": "655a63632c886846999cb171",
+          "out": "655a57ae2c886846999cb16f"
+      }
+  ],
+  "description": "desc",
+  "modules": [
+      {
+          "id": "65629b2384fb109fbc3ed521",
+          "level": 0
+      },
+      {
+          "id": "655a57ae2c886846999cb16f",
+          "level": 1
+      },
+      {
+          "id": "655a63632c886846999cb171",
+          "level": 2
+      }
+  ],
+  "name": "cs0"
+}`
 export default function Home() {
 
+  // const [data, setData] = useState()
 
-    return (
-      <div>
-        <SceneComponent antialias onSceneReady={onSceneReady} onRender={onRender} id="my-canvas" />
-      </div>
-    )
+  const fetchModConfig = async (initConfig) => {
+    try {
+      const data = await addAllConfigModuleDetails(initConfig);
+      console.log("new data")
+      console.warn(data)
+      return data
+
+    } catch (error) {
+      setModConfig({ "Response": "None" })
+    }
+  }
+
+  
+  const fetchAllModConfig = async (arrConfig) => {
+    try {
+      var temp = []
+      console.log("conf")
+      console.log(arrConfig)
+      for(const conf of arrConfig){
+        temp.push(await fetchModConfig(conf))
+      }
+      console.log("arr mc")
+      console.warn(temp)
+      return temp
+
+    } catch (error) {
+      setModConfig({ "Response": "None" })
+    }
+  }
+
+
+
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     await fetchAllConfigModuleData()
+
+  //   }
+  //  fetchData();
+
+  // }, []);
+  // console.log(data)
+
+  const [initConfig, setInitConfig] = useState([])
+  const [modConfig, setModConfig] = useState([])
+  const [dagreData, setDagreData] = useState()
+  const [data, setData] = useState([])
+  useEffect(() => {
+    async function fetchdata() {
+      const data = await getAllActiveConfigDetails()
+      // const data = {data: []}
+      setInitConfig(data.data)
+      console.log(data.data)
+
+    }
+    fetchdata();
+  }, [])
+
+  useEffect(() => {
+    let active = true;
+    async function fetchdata() {
+      if(active){
+
+        if(initConfig){
+
+          const data = await fetchAllModConfig(initConfig);
+          setModConfig(data);
+        }
+      }
+
+
+
+    }
+    fetchdata();
+    // const dD = configToDagre(modC)
+    // setDagreData(dD)
+    // setData(dD)
+    return (() => active = false)
+  }, [initConfig])
+
+
+
+
+
+  useEffect(() => {
+
+    let active = true
+    async function addCoordinates() {
+      if (active) {
+        if (modConfig ) {
+          console.log("Mod Config=============")
+          console.log(modConfig)
+          var temp = []
+          for(const mc of modConfig){
+            temp.push(configToDagre(mc))
+
+          }
+          console.warn("data")
+          console.warn(temp)
+  
+          setData(temp)
+          // setData(configToDagre(modConfig))
+        }
+      }
+
+    }
+    addCoordinates();
+    return (() => active = false)
+  }, [modConfig])
+
+  // useEffect(()=>{
+  //   if(data){
+
+  //     console.log("Data stored")
+  //     console.log(data)
+  //   }
+  // },[data])
+
+  const viewActiveConfigNodes = (data) => {
+    console.log(data)
+    if(Array.isArray(data) && data.length > 0){
+      return (
+        data.map((d) => (
+          <NodeConfigGraph initnode={d.nodes} initedge={d.edges} id={d.id} />
+        ))
+      )
+    }
+    else {
+      return (<p>No Active Configs Running</p>)
+    }
+  };
+
+  return (
+    <div className="container">
+      <h3>Active Config</h3>
+
+      {data && modConfig && viewActiveConfigNodes(data)}
+
+      <h3 className="text-center">Attacks By Date</h3>
+      <TestGraph/>
+    </div>
+    
+  )
 }
