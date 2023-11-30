@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ConfigDetails from "@/components/configdetails"
 import { addConfig, getAllConfigDetails, getConfigDetails, startConfig } from "@/api/configuration";
-export default function TestConfiguration() {
+export default function Configuration() {
   //post module using  form
   const [postFormConfig, setPostFormConfig] = useState({});
 
@@ -107,7 +107,7 @@ export default function TestConfiguration() {
 
   return (
     <>
-      <div className="container">
+      <div>
         <h1>Test Configuration</h1>
         <h3>Get config by id</h3>
           <div>

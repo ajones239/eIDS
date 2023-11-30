@@ -9,6 +9,7 @@ from swagger_gen.swagger import Swagger
 
 
 api = Flask(__name__)
+api.debug = True
 CORS(api)
 
 
@@ -21,6 +22,7 @@ CORS(api)
 def ping():
     return Response(status=204)
 
+#region Module
 
 @api.route('/module', methods=['POST'])
 @swagger_metadata(
@@ -104,6 +106,66 @@ def getAllModules():
     return jsonify(controlplane.getAllModulesJson())
 
 
+@api.route('/module/<id>/input/<data>', methods=['POST'])
+@swagger_metadata(
+    summary='Add input to a module',
+    description='Inputs a base64 encoded string to the module with the given ID',
+    response_model=[
+        (204, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def addInputToModule(id, data):
+    try:
+        module = controlplane.getModuleWithException(id)
+    except modules.ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+    module.addInput('', data)
+    return Response(status=204)
+
+@api.route('/module/<id>/update', methods=['PUT'])
+@swagger_metadata(
+    summary='Update Module',
+    description='Updates module with the given ID using data in body',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def updateModule(id):
+    try:
+        controlplane.updateModule(id,request.get_json())
+    except modules.ModuleException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+    return Response(status=200)
+
+@api.route('/module/<id>', methods=['DELETE'])
+@swagger_metadata(
+    summary='Delete module',
+    description='Delete module from DB and stops active modules/configurations',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def deleteModule(id):
+    try:
+        controlplane.deleteModule(id)
+    except Exception as e:
+        resp = jsonify({'error': str(e)})
+        resp.status = 400
+        return resp
+    return Response(status=200)
+    
+
+
+
+#endregion
+
+#region Configuration
 @api.route('/configuration', methods=['POST'])
 @swagger_metadata(
     summary='Add a new configuration set',
@@ -195,6 +257,74 @@ def getConfiguration(id):
 def getAllConfigurationSets():
     return jsonify(controlplane.getAllConfigurationSetsJson())
 
+@api.route('/configuration/active', methods=['GET'])
+@swagger_metadata(
+    summary='Get all the active configuration sets',
+    description='Returns all active configuration sets',
+
+    response_model=[
+            (200, '''Success. Returns JSON response with list. Ex)
+                [{
+                    "name": "configuration set name",
+                    "description": "description of module configuration set",
+                    "modules": [
+                        {
+                            "id": "module ID",
+                            "level": 0
+                        }
+                    ],
+                    "connections": [
+                        {
+                            "out": "module ID",
+                            "in": "module ID"
+                        }
+                    ]
+                }],...''')
+    ]
+)
+def getAllActiveConfigurationSets():
+    return jsonify(controlplane.getAllActiveConfigurationSetsJson())
+
+
+
+
+
+
+@api.route('/configuration/<id>/update', methods=['PUT'])
+@swagger_metadata(
+    summary='Update Configuration Set',
+    description='Updates configuration set with the given ID using data in body. Will stop set if active along sets with similar workers',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def updateConfiguration(id):
+    try:
+        controlplane.updateConfigurationSet(id,request.get_json())
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+    return Response(status=200)
+
+@api.route('/configuration/<id>', methods=['DELETE'])
+@swagger_metadata(
+    summary='Delete configuration set',
+    description='Delete configuration set from DB and stops active configurations/workers',
+    response_model=[
+        (200, 'Success'),
+        (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
+    ]
+)
+def deleteConfiguration(id):
+    try:
+        controlplane.deleteConfigurationSet(id)
+    except configurationset.ConfigurationSetException as e:
+        resp = jsonify({'error': e.message})
+        resp.status_code = 400
+        return resp
+    return Response(status=200)
+    
 
 @api.route('/configuration/<id>', methods=['POST'])
 @swagger_metadata(
@@ -213,27 +343,102 @@ def startConfigurationSet(id):
         resp = jsonify({'error': e.message})
         resp.status_code = 400
         return resp
+    
 
-
-@api.route('/module/<id>/input/<data>', methods=['POST'])
+@api.route('/configuration/<id>/stop', methods=['POST'])
 @swagger_metadata(
-    summary='Add input to a module',
-    description='Inputs a base64 encoded string to the module with the given ID',
+    summary='Stop a configuration set',
+    description='Stops all active workers from a config sets and related config sets using same workers.',
     response_model=[
         (204, 'Success'),
         (400, 'Invalid request. Returns JSON response. Ex {"error": "error message"}')
     ]
 )
-def addInputToModule(id, data):
+def stopConfigurationSet(id):
     try:
-        module = controlplane.getModuleWithException(id)
-    except modules.ModuleException as e:
+        controlplane.stopConfigurationSet(id)
+        return Response(status=204)
+    except configurationset.ConfigurationSetException as e:
         resp = jsonify({'error': e.message})
         resp.status_code = 400
         return resp
-    module.addInput('', data)
-    return Response(status=204)
 
+#endregion
+
+#region graphdata
+
+@api.route('/graphdata/<id>', methods=['GET'])
+@swagger_metadata(
+    summary='Get all data from graph id',
+    description='Returns all graph data from id',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+                [{
+                    JSON depends on graph data,typically...
+                    "m_id": "module id",
+                    "g_id": "graph id",
+                    "x_value": value,
+                    "y_value": value,
+                    "date":created datetime()
+                }]''')
+    ]
+)
+def getAllGraphData(id):
+    return jsonify(controlplane.getAllGraphDataJson(id))
+
+@api.route('/graphdata/attacks/<groupBy>', methods=['GET'], defaults={'groupBy': None})
+@swagger_metadata(
+    summary='Get all attack data by date',
+    description='Returns aggregate attack date',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+                [{
+                    JSON depends on graph data,typically...
+                    "m_id": "module id",
+                    "g_id": "graph id",
+                    "x_value": value,
+                    "y_value": value,
+                    "date":created datetime()
+                }]''')
+    ]
+)
+def getTotalAttacksGraphData(groupBy):
+    return jsonify(controlplane.getTotalAttackGraphDataJson(groupBy))
+
+#endregion
+
+#region worker
+
+@api.route('/worker', methods=['GET'])
+@swagger_metadata(
+    summary='Returns all worker module IDs',
+    description='Get all active IDs of modules used by workers',
+    response_model=[
+        (200, '''Success. Returns JSON response. Ex)
+[{
+    "modules": List of module IDs
+}]''')
+    ]
+)
+def getAllWorkers():
+    return jsonify(controlplane.getAllWorkersModuleID())
+
+@api.route('/global', methods=['GET'])
+@swagger_metadata(
+    summary='Prints globals',
+    description='Print globals',
+    response_model=[
+        (200, 'Success')
+    ]
+)
+def printGlobals():
+    controlplane.printGlobals()
+    print(globals().keys())
+    return Response(status=200)
+
+#endregion
 
 swagger = Swagger(
     app=api,

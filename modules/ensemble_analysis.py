@@ -31,14 +31,16 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         return self.getOutputData()
 
     def addInput(self, moduleId, data):
-        self.evaluate_stacking_model(data,
-                                self.getTempFile('stack.pkl'),
-                                self.getTempFile('rf_hpo.pkl'),
-                                self.getTempFile('xg_hpo.pkl'),
-                                self.getTempFile('rf_hpo.pkl'),
-                                self.getTempFile('et_hpo.pkl'),
-                                self.getTempFile('dt_hpo.pkl'),
-                                self.getTempFile('important_features.pkl'))
+        if data is None:
+            return
+        r = self.evaluate_stacking_model(data,
+                                self.getTempFilePath('stack.pkl'),
+                                self.getTempFilePath('xg_hpo.pkl'),
+                                self.getTempFilePath('rf_hpo.pkl'),
+                                self.getTempFilePath('et_hpo.pkl'),
+                                self.getTempFilePath('dt_hpo.pkl'),
+                                self.getTempFilePath('important_features.pkl'))
+        print('Class for interval of network data:' + str(r))
 
     def start(self):
         # assumes data is {'filename', 'data'}
@@ -57,6 +59,10 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         # Load the data
         df = data
 
+        # Dictionary mapping index to attack name
+        index_to_attack = {0:"Normal", 1: "Bot", 2: "BruteForce", 3: "DoS", 
+                   4: "Infiltration", 5: "PortScan", 6: "WebAttack"}
+        
         # Z-score normalization
         features = df.dtypes[df.dtypes != 'object'].index
         df[features] = df[features].apply(lambda x: (x - x.mean()) / x.std())
@@ -98,8 +104,9 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         # Calculate and print evaluation metrics - most common class = class of detected attack type
         class_output = np.bincount(y_predict).argmax()
 
-        # return class output
-        return class_output
+        # Use the dictionary to get the attack name
+        attack_name = index_to_attack.get(class_output, 'Unknown Attack')  # Default to 'Unknown Attack' if not found
 
-
+        # return attack name
+        return attack_name
 

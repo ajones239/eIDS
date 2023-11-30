@@ -1,0 +1,15 @@
+{
+   "name": "cs0",
+   "description": "desc",
+   "modules": [
+       {
+           "id": "655a57ae2c886846999cb16f",
+           "level": 0
+       }
+   ],
+   "connections": [
+   ],
+   "actionConditions":[
+
+   ]
+}

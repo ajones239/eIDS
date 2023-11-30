@@ -4,7 +4,7 @@ pushd ../modules >/dev/null || exit
 
 echo "{
         \"name\": \"EnsembleAnalysis\",
-        \"description\": \"An ensemble-based analys module. More description goes here...\",
+        \"description\": \"An ensemble-based analysis module. More description goes here...\",
         \"type\": 3,
         \"dependencies\": [
             \"scikit-learn\",
@@ -17,7 +17,8 @@ echo "{
             \"et_hpo.pkl\": \"$(basenc --base64url < ../models/et_hpo.pkl | tr -d '\n')\",
             \"rf_hpo.pkl\": \"$(basenc --base64url < ../models/rf_hpo.pkl | tr -d '\n')\",
             \"xg_hpo.pkl\": \"$(basenc --base64url < ../models/xg_hpo.pkl | tr -d '\n')\",
-            \"stack.pkl\": \"$(basenc --base64url < ../models/stack.pkl | tr -d '\n')\"
+            \"stack.pkl\": \"$(basenc --base64url < ../models/stack.pkl | tr -d '\n')\",
+            \"important_features.pkl\": \"$(basenc --base64url < ../models/important_features.pkl | tr -d '\n')\"
         }
     }" > /tmp/ensemble_analysis_datafile.json
 

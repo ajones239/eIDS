@@ -27,3 +27,22 @@ hr {
 ._11RoI {
   background: rgb(33, 37, 41) !important;
 }
+
+
+#top-nav-module-dropdown {
+  margin-left: 0px;
+  padding-left: 4px !important;
+  background: inherit;
+  border-width: 0; 
+  color: var(--bs-nav-link-color);
+
+}
+
+#top-nav-config-dropdown {
+  margin-left: 0px;
+  padding-left: 4px !important;
+  background: inherit;
+  border-width: 0; 
+  color: var(--bs-nav-link-color);
+}
+

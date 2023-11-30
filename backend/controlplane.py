@@ -14,6 +14,8 @@ import sys
 dbclient = MongoClient('mongodb://localhost:27017/')
 moduleCollection = dbclient['eIDS']['modules']
 configSetCollection = dbclient['eIDS']['configurations']
+graphDataCollection = dbclient['eIDS']['graphdata']
+
 
 activeModules = dict()
 activeConfigurationSets = dict()
@@ -38,6 +40,7 @@ def getModuleJson(id):
         raise modules.ModuleException('Invalid module ID ' + id)
     mjson['id'] = id
     mjson.pop('_id')
+    print("return ",mjson)
     return mjson
 
 
@@ -51,6 +54,7 @@ def loadModule(id):
     with moduleLock:
         activeModules[id] = module
     try:
+        module.name = mjson['name']
         module.data = mjson['data']
     except KeyError:
         pass
@@ -83,6 +87,71 @@ def getAllModulesJson():
     return results
 
 
+def updateModule(id,moduleJson):
+    if not moduleCollection.find_one({"_id":ObjectId(id)}):
+        raise modules.ModuleException('No module loaded with ID: ' + id)
+    #verify Json
+    modules.verifyModuleJson(moduleJson)
+    #get list of active config sets that we need to restart
+    runningConfigSets = []
+    with configSetLock:
+        for c in activeConfigurationSets:
+            if any ( d['id'] == id for d in activeConfigurationSets[c].modules) and activeConfigurationSets[c].active == True:
+                runningConfigSets.append(c)
+
+    #stop module
+    stopModule(id)
+    #unload module
+    unloadModule(id)
+    #update module
+    for dep in moduleJson['dependencies']:
+        if importlib.util.find_spec(dep) is None:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', dep])
+    moduleCollection.update_one({"_id":ObjectId(id)},{"$set": moduleJson})
+    #reload module
+    loadModule(id)
+    #restart configSets
+
+    for c in runningConfigSets:
+        print(c)
+        startConfigurationSet(c)
+
+    return True
+    
+
+def deleteModule(id):
+    stopModule(id)
+    unloadModule(id)
+    moduleCollection.delete_one({"_id":ObjectId(id)})
+
+    return True
+
+
+#removes module object from memory
+def unloadModule(id):
+    with moduleLock:
+        try:
+            m = activeModules.pop(id)
+            del globals()[m.name]
+            del m
+        except KeyError:
+            pass
+
+
+
+#stop module workers and config sets
+def stopModule(id):
+    #check configuration sets first and stop workers
+    with configSetLock:
+        for c in activeConfigurationSets:
+            if id in activeConfigurationSets[c].modules:
+                stopConfigurationSet(activeConfigurationSets[c].id)
+    
+    #redundant stop for rogue workers
+    stopWorker(id)
+
+
+
 def addConfigurationSet(confJson):
     id = str(configSetCollection.insert_one(confJson).inserted_id)
     confSet = configurationset.ConfigurationSet(confJson)
@@ -96,7 +165,7 @@ def getConfigurationSetJson(id):
     configjson = configSetCollection.find_one({'_id': ObjectId(id)})
     if configjson is None:
         raise configurationset.ConfigurationSetException('Invalid configuration set ID ' + id)
-    configjson[id] = id
+    configjson["id"] = id
     configjson.pop('_id')
     return configjson
 
@@ -126,6 +195,42 @@ def getAllConfigurationSetsJson():
         results.append(document)
     return results
 
+def getAllActiveConfigurationSetsJson():
+    data = []
+    with configSetLock:
+        try:
+            for id,c in activeConfigurationSets.items():
+                if c.active:
+                    data.append({'id':id,'name': c.name,'description': c.description,'modules':c.modules,'connections':c.connections})
+        except KeyError:
+            pass
+    return data
+
+def updateConfigurationSet(id,configJson):
+    isActive = getConfigurationSet(id).active
+    stopConfigurationSet(id)
+    unloadConfigurationSet(id)
+    print("Got to here")
+    configSetCollection.update_one({"_id":ObjectId(id)},{"$set": configJson})
+    loadConfigurationSet(id)
+
+    if isActive:
+        startConfigurationSet(id)
+
+
+def deleteConfigurationSet(id):
+    stopConfigurationSet(id)
+    unloadConfigurationSet(id)
+    configSetCollection.delete_one({"_id":ObjectId(id)})
+
+
+def unloadConfigurationSet(id):
+    with configSetLock:
+        try:
+            c = activeConfigurationSets.pop(id)
+            del c
+        except KeyError:
+            pass
 
 
 def configureConnections(connections):
@@ -157,9 +262,109 @@ def startConfigurationSet(id):
     # sort by level
     configSet.modules.sort(key=lambda t: t['level'])
 
+    for cond in configSet.actionConditions:
+        module = getModule(cond['actionModule'])
+        module.addCondition(cond)
+
     configureConnections(configSet.connections)
     for m in configSet.modules:
         with moduleLock:
             module = activeModules[m['id']]
         w = worker.Worker(module)
+        with workerLock:
+            activeWorkers[m['id']] = w
         w.start()
+
+def stopConfigurationSet(id):
+    configSet = getConfigurationSet(id)
+    if configSet.active == True:
+        configSet.active = False
+    else:
+        return
+
+    #stop workers first, will pbreak other running configs running the same workers
+    #reverse sort module by level 
+    configSet.modules.sort(key=lambda t: t['level'], reverse=True)
+    with moduleLock:
+        for m in configSet.modules:
+            stopModule(m['id'])
+            unloadModule(m['id'])
+
+    
+
+def stopWorker(id):
+    with workerLock:
+        try:
+            activeWorkers[id].stop()
+            activeWorkers.pop(id)
+        except KeyError:
+            pass
+
+
+def getTotalAttackGraphDataJson(groupBy):
+    pipeline = [
+        {
+            "$group": {
+                "_id": {
+                    "year": {"$year": "$x_value"},
+                    "month": {"$month": "$x_value"},
+                    "day": {"$dayOfMonth": "$x_value"}
+                },
+                "total": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        },
+        {
+            "$project": {
+                "x_value": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": {
+                            "$dateFromParts": {
+                                "year": "$_id.year",
+                                "month": "$_id.month",
+                                "day": "$_id.day"
+                            }
+                        }
+                    }
+                },
+                "y_value": "$total"
+            }
+        }
+    ]
+    cursor = graphDataCollection.aggregate(pipeline=pipeline)
+    results = []
+    for document in cursor:
+        # document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    # print(results)
+    return results
+
+def getAllGraphDataJson(graphId):
+    #todo change find id into bson id 
+    cursor = graphDataCollection.find({"g_id":graphId})
+    results = []
+    for document in cursor:
+        # document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    print(results)
+    return results
+
+    
+def getAllWorkersModuleID():
+    data = []
+    with workerLock:
+        try:
+            for id in activeWorkers.keys():
+                m = moduleCollection.find_one({'_id':ObjectId(id)})
+                data.append({'id': id, 'name': m['name'], 'description':m['description']})
+        except KeyError:
+            pass
+    return data
+
+def printGlobals():
+    print(globals().keys())
