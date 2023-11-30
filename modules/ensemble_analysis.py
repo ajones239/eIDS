@@ -43,6 +43,7 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         print('Class for interval of network data:' + str(r))
 
     def start(self):
+        self.log('Starting Ensemble Analysis Module')
         # assumes data is {'filename', 'data'}
         # and that filenames are 'dt_hpo.pkl', 'et_hpo.pkl',
         # 'rf_hpo.pkl', 'stack.pkl', and 'xg_hpo.pkl'

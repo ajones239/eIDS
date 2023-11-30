@@ -12,6 +12,7 @@ class DataGrapher(modules.Module, modules.IOModule):
         self.doneLock = Lock()
         self.done = False
         self.db = None
+        self.log('Starting DataGrapher Module')
 
     def getOutput(self):
         return 'some output'

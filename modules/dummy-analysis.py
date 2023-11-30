@@ -14,6 +14,7 @@ class DummyAnalysis(modules.Module, modules.IOModule):
         pass
 
     def start(self):
+        self.log('Starting Dummy Analysis Module')
         pass
 
     def stop(self):

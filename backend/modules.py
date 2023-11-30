@@ -6,6 +6,7 @@ from queue import Queue
 from threading import RLock
 import os
 import tempfile
+import datetime
 
 
 class ModuleException(Exception):
@@ -53,6 +54,7 @@ class Module(ABC):
         self.implementation = None
         self.data = None
 
+        self._logdump = ""
         self._logLock = RLock()
         self._eventLock = RLock()
         self._logQueues = []
@@ -63,6 +65,14 @@ class Module(ABC):
         with self._logLock:
             self._logQueues.append(q)
         return q
+
+    def log(self, msg):
+        with self._logLock:
+            self._logdump += datetime.datetime.now() + ' | module ' + self.id + ' | ' + msg + '\n'
+
+    def getLogs(self):
+        with self._logLock:
+            return self._logdump
 
     def _addLog(self, msg):
         with self._logLock:

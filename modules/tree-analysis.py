@@ -42,6 +42,7 @@ class TreeBasedAnalysis(modules.Module, modules.IOModule):
     def start(self):
         for k in self.data.keys():
             self.addTempFile(k, urlsafe_b64decode(self.data[k]))
+        self.log('Starting Tree-based Analysis Module')
 
     def stop(self):
         for k in self.data.keys():

@@ -26,6 +26,17 @@ configSetLock = RLock()
 workerLock = RLock()
 
 
+def getLogs():
+    l = []
+    for m in activeModules:
+        d = dict()
+        d['moduleId'] = m.id,
+        d['name'] = m.name,
+        d['log'] = m.getLogs()
+        l.append[d]
+    return l
+
+
 def addModule(moduleJson):
     modules.verifyModuleJson(moduleJson)
     for dep in moduleJson['dependencies']:

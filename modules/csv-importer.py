@@ -17,6 +17,7 @@ class CSVImporter(modules.Module, modules.IOModule):
         self.setOutput(pandas.read_csv(self.getTempFilePath('csv-data')))
 
     def start(self):
+        self.log('Starting CSV Importer Module')
         pass
 
     def stop(self):

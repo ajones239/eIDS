@@ -440,6 +440,23 @@ def printGlobals():
 
 #endregion
 
+@api.route('/logs', methods=['GET'])
+@swagger_metadata(
+    summary='Get logs for all modules',
+    description='Returns list log objects for each active module',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+[{
+    "moduleId": "32345534545345",
+    "name": "Module Name",
+    "log": "<timstamp> | module <ID> | <logs>
+}]''')
+    ]
+)
+def getLogs():
+    return jsonify(controlplane.getLogs())
+
 swagger = Swagger(
     app=api,
     title='eIDS backend API',

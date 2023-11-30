@@ -19,6 +19,7 @@ class DummyAnalysisThread(modules.Module, modules.IOModule):
     def start(self):
         self.thread = Thread(target=self.runAnalysis)
         self.thread.start()
+        self.log('Starting Dummy Analysis Thread Module')
 
     def stop(self):
         with self.doneLock:

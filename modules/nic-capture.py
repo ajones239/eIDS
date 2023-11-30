@@ -34,6 +34,7 @@ class NICCapture(modules.Module, modules.IOModule):
         self.addTempFile('none', b'0')
         self.thread = Thread(target=self.captureNetworkTraffic)
         self.thread.start()
+        self.log('Starting NIC Capture Module')
 
     def stop(self):
         with self.doneLock:

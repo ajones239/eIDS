@@ -2,6 +2,7 @@ class DummyAction(modules.Module, modules.ActionModule):
 
     def __init__(self):
         super(DummyAction, self).__init__()
+        self.log('Starting Dummy Action Module')
 
     def start(self):
         pass

@@ -44,6 +44,7 @@ class BiGANAnalysis(modules.Module, modules.IOModule):
         # BiGAN_encoder.hdf5, column_transformer.joblib, & min_max_scaler.joblib
         for k in self.data.keys():
             self.addTempFile(k, urlsafe_b64decode(self.data[k]))
+        self.log('Starting BiGAN Analysis Module')
 
     def stop(self):
         for k in self.data.keys():

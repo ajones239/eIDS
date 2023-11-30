@@ -45,6 +45,7 @@ class Pcap2Csv(modules.Module, modules.IOModule):
             z.extractall(self.getTempDir())
         self.thread = Thread(target=self.processPcaps)
         self.thread.start()
+        self.log('Starting PCAP to CSV Conversion Module')
 
     def stop(self):
         with self.doneLock:

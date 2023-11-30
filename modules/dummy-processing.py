@@ -14,6 +14,7 @@ class DummyProcessing(modules.Module, modules.IOModule):
         print('Got data: ', data)
 
     def start(self):
+        self.log('Starting Dummy Processing Module')
         pass
 
     def stop(self):

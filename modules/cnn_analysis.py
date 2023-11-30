@@ -49,6 +49,7 @@ class CNNAnalysis(modules.Module, modules.IOModule):
         self.addTempFile('none', b'0')
         urllib.request.urlretrieve(self.data['resnet.h5_url'], self.getTempFilePath('resnet.h5'))
         self.addTempFile('converter.pkl', urlsafe_b64decode(self.data['converter.pkl']))
+        self.log('Starting CNN Analysis Module')
 
     def stop(self):
         self.deleteTempFile('converter.pkl')
