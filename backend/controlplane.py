@@ -29,11 +29,12 @@ workerLock = RLock()
 def getLogs():
     l = []
     for m in activeModules:
+        mod = getModule(m)
         d = dict()
-        d['moduleId'] = m.id,
-        d['name'] = m.name,
-        d['log'] = m.getLogs()
-        l.append[d]
+        d['moduleId'] = m,
+        d['name'] = mod.name,
+        d['log'] = mod.getLogs()
+        l.append(d)
     return l
 
 

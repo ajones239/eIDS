@@ -68,7 +68,7 @@ class Module(ABC):
 
     def log(self, msg):
         with self._logLock:
-            self._logdump += datetime.datetime.now() + ' | module ' + self.id + ' | ' + msg + '\n'
+            self._logdump += str(datetime.datetime.now()) + ' | module ' + str(self.id) + ' | ' + msg + '\n'
 
     def getLogs(self):
         with self._logLock:
