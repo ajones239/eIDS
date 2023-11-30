@@ -169,7 +169,7 @@ export default function Home() {
     if(Array.isArray(data) && data.length > 0){
       return (
         data.map((d) => (
-          <NodeConfigGraph initnode={d.nodes} initedge={d.edges} />
+          <NodeConfigGraph initnode={d.nodes} initedge={d.edges} id={d.id} />
         ))
       )
     }

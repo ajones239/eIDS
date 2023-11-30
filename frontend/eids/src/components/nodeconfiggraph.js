@@ -19,7 +19,7 @@ import { configToDagre } from "@/utility/configToDagre";
 import { fetchModuleDetails } from "@/utility/module";
 
 
-export default function NodeConfigGraph({ initnode,initedge }) {
+export default function NodeConfigGraph({ initnode,initedge,id }) {
 
   const [modulesInfo,setModulesInfo] = useState("")
   const [module, setModule] = useState("")
@@ -73,7 +73,7 @@ export default function NodeConfigGraph({ initnode,initedge }) {
   return (
     <div className="container">
 
-      <h4>Config 1</h4>
+      <h4>id:{id}</h4>
       <div className={"container"} style={{ height: "15vh", minHeight: "100px" }}>
         <ReactFlow
           nodes={nodes}

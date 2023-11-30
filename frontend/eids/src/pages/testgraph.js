@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 
 const graphDataId="graph_id2"
-const TIME = 3000
+const TIME = 5000
 export default function TestGraph(){
    const [graphData,setGraphData] = useState()
 

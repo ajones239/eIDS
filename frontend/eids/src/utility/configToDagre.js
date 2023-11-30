@@ -154,5 +154,5 @@ const makeData = (connections, modules) => {
   const {nodes: nodes, edges: edges} = getLayoutedElements(initialNodes,initialEdges)
   console.log('nodes')
   console.log(nodes)
-  return {nodes, edges};
+  return {nodes, edges, id:config.id};
 }
