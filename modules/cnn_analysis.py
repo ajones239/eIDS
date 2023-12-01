@@ -44,6 +44,8 @@ class CNNAnalysis(modules.Module, modules.IOModule):
                     self.getTempFilePath('converter.pkl'),
                     data)
         print('Class for interval of network data: ' + str(r))
+        self.setOutput(str(r))
+        return str(r)
 
     def start(self):
         self.addTempFile('none', b'0')

@@ -37,6 +37,8 @@ class BiGANAnalysis(modules.Module, modules.IOModule):
         except ValueError:
             return
         print('Class for interval of network data: ' + str(r))
+        self.setOutput(str(r))
+        return str(r)
 
     def start(self):
         # assumes data is {'filename': 'data'}

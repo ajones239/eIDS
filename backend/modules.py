@@ -189,9 +189,8 @@ class IOModule(ABC):
     def getOutputData(self):
         with self._outputLock:
             r = self._output
-            if self.type == DataFrequency.ONE_TIME_ACCESS:
-                self._hasOutput = False
-                self._output = None
+            self._hasOutput = False
+            self._output = None
             return r
 
     def setHasOutput(self, flag):

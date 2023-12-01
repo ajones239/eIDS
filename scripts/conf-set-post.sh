@@ -41,7 +41,7 @@ curl -v \
                 {
                     \"actionModule\": \"$4\",
                     \"operator\": \"=\",
-                    \"value\": \"0\"
+                    \"value\": \"Normal\"
                 }
             ]
     }" http://localhost:5000/configuration

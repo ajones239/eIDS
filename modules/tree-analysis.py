@@ -31,13 +31,16 @@ class TreeBasedAnalysis(modules.Module, modules.IOModule):
     def addInput(self, moduleId, data):
         if data is None:
             return
-        return self.evaluate_stacking_model(
+        r = str(self.evaluate_stacking_model(
                     data,
                     self.getTempFilePath('dt_model.pkl'),
                     self.getTempFilePath('stk_model.pkl'),
                     self.getTempFilePath('xg_model.pkl'),
                     self.getTempFilePath('rf_model.pkl'),
-                    self.getTempFilePath('et_model.pkl'))
+                    self.getTempFilePath('et_model.pkl')))
+        print('Class for interval of network data: ' + r)
+        self.setOutput(str(r))
+        return r
 
     def start(self):
         for k in self.data.keys():

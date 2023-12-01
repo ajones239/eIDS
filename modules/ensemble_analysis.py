@@ -41,6 +41,8 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
                                 self.getTempFilePath('dt_hpo.pkl'),
                                 self.getTempFilePath('important_features.pkl'))
         print('Class for interval of network data:' + str(r))
+        self.setOutput(str(r))
+        return str(r)
 
     def start(self):
         self.log('Starting Ensemble Analysis Module')
