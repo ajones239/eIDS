@@ -354,6 +354,34 @@ def getTotalAttackGraphDataJson(groupBy):
     # print(results)
     return results
 
+
+def getTotalAttackGraphTableDataJson():
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$y_value",
+                "total": {"$sum":1}
+            }
+        },
+        {
+            "$sort": {"_id": 1}
+        },
+        {
+            "$project": {
+                "x_value": "$_id",
+                "y_value": "$total"
+            }
+        }
+    ]
+    cursor = graphDataCollection.aggregate(pipeline=pipeline)
+    results = []
+    for document in cursor:
+        # document['id'] = str(document["_id"])
+        document.pop('_id')
+        results.append(document)
+    # print(results)
+    return results
+
 def getAllGraphDataJson(graphId):
     #todo change find id into bson id 
     cursor = graphDataCollection.find({"g_id":graphId})
@@ -365,6 +393,11 @@ def getAllGraphDataJson(graphId):
     print(results)
     return results
 
+def getCollectionStatistics():
+    mod_count = moduleCollection.count_documents({})
+    conf_count = configSetCollection.count_documents({})
+
+    return {"m_count":mod_count,"c_count":conf_count}
     
 def getAllWorkersModuleID():
     data = []

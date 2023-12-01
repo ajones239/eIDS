@@ -9,6 +9,9 @@ import { getAllActiveConfigDetails, getAllConfigDetails, getConfigDetails } from
 import { setConfig } from "next/config";
 import { ComputeShader } from "@babylonjs/core";
 import TestGraph from "./testgraph";
+import GraphTable from "@/components/graphtable";
+import { getAttackGraphTableData, getGraphCollectionData } from "@/api/graph";
+import CollectionTable from "@/components/collectiontable";
 
 // const config =  addModuleDataToConfig();
 // const data = configToDagre(config)
@@ -43,6 +46,8 @@ const exconfig = `{
   ],
   "name": "cs0"
 }`
+
+
 export default function Home() {
 
   // const [data, setData] = useState()
@@ -77,22 +82,34 @@ export default function Home() {
     }
   }
 
+  const fetchAttackTableData = async () => {
+    try {
+      const data = await getAttackGraphTableData();
+      setGraphTable(data.data)
+    } catch (error) {
+      setGraphTable([])
+    }
+  }
+
+  const fetchCollectionData = async () => {
+    try {
+      const data = await getGraphCollectionData();
+      setCollection(data.data);
+    } catch (error) {
+      setCollection({"m_count":0,"c_count":0});
+    }
+  }
 
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     await fetchAllConfigModuleData()
-
-  //   }
-  //  fetchData();
-
-  // }, []);
-  // console.log(data)
 
   const [initConfig, setInitConfig] = useState([])
   const [modConfig, setModConfig] = useState([])
   const [dagreData, setDagreData] = useState()
   const [data, setData] = useState([])
+  const [graphTable, setGraphTable] = useState([])
+  const [collection, setCollection] = useState([])
+
+
   useEffect(() => {
     async function fetchdata() {
       const data = await getAllActiveConfigDetails()
@@ -115,8 +132,6 @@ export default function Home() {
           setModConfig(data);
         }
       }
-
-
 
     }
     fetchdata();
@@ -156,13 +171,16 @@ export default function Home() {
     return (() => active = false)
   }, [modConfig])
 
-  // useEffect(()=>{
-  //   if(data){
 
-  //     console.log("Data stored")
-  //     console.log(data)
-  //   }
-  // },[data])
+
+  useEffect(()=>{
+    async function fetchdata(){
+      await fetchAttackTableData();
+      await fetchCollectionData();
+    }
+
+    fetchdata();
+  },[])
 
   const viewActiveConfigNodes = (data) => {
     console.log(data)
@@ -186,6 +204,11 @@ export default function Home() {
 
       <h3 className="text-center">Attacks By Date</h3>
       <TestGraph/>
+      <div className="d-flex flex-row">
+
+        <GraphTable data={graphTable}/>
+        <CollectionTable className="align-self-start" d={collection}/>
+      </div>
     </div>
     
   )

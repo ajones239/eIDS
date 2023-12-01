@@ -37,3 +37,34 @@ export const getAttackGraphData = async (groupBy="t") => {
    return response;
 
 }
+
+
+export const getAttackGraphTableData = async () => {
+
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}graphdata/attacks/table`;
+
+   const response = await axios.get(url,config);
+   if(log){
+      const prefix = '[modules/getAttackGraphTableData]';
+      console.log(prefix);
+      console.log('url: ', url);
+      console.log('response: ',response)
+   }
+   return response;
+
+}
+
+export const getGraphCollectionData = async () => {
+
+   const url = `${process.env.NEXT_PUBLIC_ENDPOINT}graphdata/collection`;
+
+   const response = await axios.get(url,config);
+   if(log){
+      const prefix = '[modules/getGraphCollectionData]';
+      console.log(prefix);
+      console.log('url: ', url);
+      console.log('response: ',response)
+   }
+   return response;
+
+}

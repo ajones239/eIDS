@@ -407,6 +407,43 @@ def getAllGraphData(id):
 def getTotalAttacksGraphData(groupBy):
     return jsonify(controlplane.getTotalAttackGraphDataJson(groupBy))
 
+@api.route('/graphdata/attacks/table', methods=['GET'])
+@swagger_metadata(
+    summary='Get all attack data by category table',
+    description='Returns aggregate attack counts',
+
+    response_model=[
+            (200, '''Success. Returns JSON Array response. Ex)
+                [  { _id: null, x_value: null, y_value: 13 },
+                    { _id: 1, x_value: 1, y_value: 71 },
+                    { _id: 2, x_value: 2, y_value: 7 },
+                    { _id: 38, x_value: 38, y_value: 1 },
+                    { _id: 102, x_value: 102, y_value: 1 },
+                    { _id: WebAttack, x_value: WebAttack, y_value: 2 },
+                    { _id: 'DDos', x_value: 'DDos', y_value: 2 
+                }]''')
+    ]
+)
+def getTotalAttacksGraphTableData():
+    return jsonify(controlplane.getTotalAttackGraphTableDataJson())
+
+
+@api.route('/graphdata/collection', methods=['GET'])
+@swagger_metadata(
+    summary='Get statistics of collections',
+    description='Returns module and config set count',
+
+    response_model=[
+            (200, '''Success. Returns JSON response. Ex)
+                [{
+                    "m_count": "module count",
+                    "c_count": "config count",
+                }]''')
+    ]
+)
+def getCollectionStatistics():
+    return jsonify(controlplane.getCollectionStatistics())
+
 #endregion
 
 #region worker
