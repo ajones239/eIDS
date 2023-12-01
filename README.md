@@ -1,6 +1,10 @@
 # eIDS
 eIDS is an extensible and modular IDS framework that leverages machine learning to detect various types of network attacks. We provide an extensive set of modules out of the box, but provide a framework so that users can easily develop their own.
 
+
+![ArchDiagram](https://github.com/ajones239/eIDS/assets/90163449/ee4847c1-ac3a-4b3b-aec0-70dc585181af)
+
+
 ## Provided modules
 
 ### Analysis modules
