@@ -15,6 +15,7 @@ import CollectionTable from "@/components/collectiontable";
 
 // const config =  addModuleDataToConfig();
 // const data = configToDagre(config)
+const TIME = 10000
 
 
 const exconfig = `{
@@ -175,12 +176,32 @@ export default function Home() {
 
   useEffect(()=>{
     async function fetchdata(){
-      await fetchAttackTableData();
       await fetchCollectionData();
     }
 
     fetchdata();
   },[])
+
+
+  useEffect(() => {
+    // (1) define within effect callback scope
+    const fetchData = async () => {
+      await fetchAttackTableData();
+      try {
+      } catch (error) {
+        console.log(error);
+      }
+    };
+      
+    const id = setInterval(() => {
+      fetchData(); // <-- (3) invoke in interval callback
+    }, TIME);
+  
+    fetchData(); // <-- (2) invoke on mount
+  
+    return () => clearInterval(id);
+  }, [])
+
 
   const viewActiveConfigNodes = (data) => {
     console.log(data)
