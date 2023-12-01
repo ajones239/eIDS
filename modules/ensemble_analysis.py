@@ -7,18 +7,9 @@ Original file is located at
     https://colab.research.google.com/drive/1OeB_WtSx-MKW_DXnx2rbDSi4mSvm60F_
 """
 
-#ignore deprecated warnings
-import warnings
-warnings.filterwarnings("ignore")
-
 #Imports
-# import pandas as pd
-from sklearn.preprocessing import LabelEncoder
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report, confusion_matrix
 import joblib
 import numpy as np
-# import seaborn as sns
-# import matplotlib.pyplot as plt
 from base64 import urlsafe_b64decode
 
 class EnsembleAnalysis(modules.Module, modules.IOModule):

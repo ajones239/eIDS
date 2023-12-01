@@ -1,24 +1,9 @@
 # Treebased model loading file
 
-# from re import X
-# import warnings
-# warnings.filterwarnings("ignore")
-
-
-from joblib.numpy_pickle import pickle
-import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-# from sklearn.metrics import accuracy_score, precision_recall_fscore_support, classification_report, confusion_matrix
-# from scipy import stats
 import joblib
 import numpy as np
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# import pickle
-# import os
 from base64 import urlsafe_b64decode
-
-# def evaluate_stacking_model(data_file, stack_model_file, xg_model_file, rf_model_file, et_model_file, dt_model_file, xgb_model, select_features_file):
 
 class TreeBasedAnalysis(modules.Module, modules.IOModule):
 
@@ -53,11 +38,6 @@ class TreeBasedAnalysis(modules.Module, modules.IOModule):
 
     def evaluate_stacking_model(self, data, dt_model_file, stk_model_file, xg_model_file, rf_model_file, et_model_file):
 
-        # #mount drive
-        # from google.colab import drive
-        # drive.mount('/content/drive')
-
-
         # Load the data
         df = data
 
@@ -72,18 +52,11 @@ class TreeBasedAnalysis(modules.Module, modules.IOModule):
 
         X_test= df
 
-        # #Feature selection - using saved approach from training to use same set of features
-        # X_test = df[loaded_fs].values
-        # print(X_test)
-        # print(X_test.shape)
-
-
         # Encode labels
         labelencoder = LabelEncoder()
         df.iloc[:, -1] = labelencoder.fit_transform(df.iloc[:, -1])
 
         # Get X and y
-        # X = df.drop(['Label'], axis=1).values
         y = df.iloc[:, -1].values.reshape(-1, 1)
         y = np.ravel(y)
 
@@ -96,17 +69,6 @@ class TreeBasedAnalysis(modules.Module, modules.IOModule):
         rf = joblib.load(rf_model_file)
         et = joblib.load(et_model_file)
 
-        # et = joblib.load(et_model_file)
-        # print(et_model_file)
-        # print(os.path.exists(dt_model_file))
-        # with open(et_model_file,'rb') as f:
-        #    content = f.read()
-        # print(content[:100])
-        # with open(et_model_file, 'rb') as f:
-        #  et = pickle.load(f)
-        # xgb = joblib.load(xgb_model)
-
-
         # Make predictions
         try:
             dt_test = dt.predict(X_test)
@@ -115,7 +77,6 @@ class TreeBasedAnalysis(modules.Module, modules.IOModule):
             xg_test = xg.predict(X_test)
         except:
             return
-        # xgb_test = xgb.predict(X_test)
 
         # Reshape predictions
         dt_test = dt_test.reshape(-1, 1)
@@ -137,12 +98,3 @@ class TreeBasedAnalysis(modules.Module, modules.IOModule):
         print("Most Common Class in y_predict:", most_common_class)
 
         return most_common_class
-
-
-
-# evaluate_stacking_model("/content/drive/Shareddrives/Master's Project I/Treebased_Analysis/CICIDS2017_sample.csv",
-#                         "/content/drive/Shareddrives/Master's Project I/Treebased_Analysis/dt_model.pkl",
-#                         "/content/drive/Shareddrives/Master's Project I/Treebased_Analysis/stk_model.pkl",
-#                          "/content/drive/Shareddrives/Master's Project I/Treebased_Analysis/xg_model.pkl",
-#                         "/content/drive/Shareddrives/Master's Project I/Treebased_Analysis/rf_model.pkl",
-#                         "/content/drive/Shareddrives/Master's Project I/Treebased_Analysis/et_model.pkl")

@@ -14,7 +14,6 @@ import joblib
 import tensorflow as tf
 from keras.models import load_model
 from keras.utils import CustomObjectScope
-# from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 
 
 class BiGANAnalysis(modules.Module, modules.IOModule):
@@ -86,12 +85,3 @@ class BiGANAnalysis(modules.Module, modules.IOModule):
         max_label = 'Normal' if max_label_index == 0 else 'Anomalous'
 
         return max_label
-
-# Analysis Example Usage
-# data_path = "/content/drive/MyDrive/Master's project stuff/datasets/CICIDS2017_sample_km.csv"
-# models_path = "/content/BiGAN"
-# ct_path = "/content/BiGAN/column_transformer.joblib"
-# scaler_path = "/content/BiGAN/min_max_scaler.joblib"
-
-# max_label = evaluate_bigan_model(data_path, models_path, ct_path, scaler_path)
-# print(f"The most frequent predicted label is: {max_label}")
