@@ -50,7 +50,7 @@ export default function LogsMain() {
                         <td>{log.name ? log.name: "Unknown Name"}</td>
                         <td>{log.moduleId? log.moduleId: "Unknown ID"}</td>
 
-                        <td>{<LogDetailsModal data={log.log}/>}</td>
+                        <td>{<LogDetailsModal logdata={log.log}/>}</td>
 
                     </tr> 
                   ))
