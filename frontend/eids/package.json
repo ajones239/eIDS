@@ -11,6 +11,7 @@
   "dependencies": {
     "@babylonjs/core": "^6.20.2",
     "@dagrejs/dagre": "^1.0.4",
+    "@melloware/react-logviewer": "^5.0.2",
     "autoprefixer": "10.4.15",
     "axios": "^1.5.0",
     "bootstrap": "^5.3.1",

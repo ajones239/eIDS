@@ -74,11 +74,11 @@ export default function Topbar({ Component, pageProps }) {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link href="/">Dashboard</Nav.Link>
-            <Nav.Link href="/analytics">Analytics</Nav.Link>
+            {/* <Nav.Link href="/analytics">Analytics</Nav.Link> */}
             <Nav.Link href="/logs">Logs</Nav.Link>
             <ModuleLinks/>
             <ConfigLinks/>
-            <TestLinks/>
+            {/* <TestLinks/> */}
             {/* { 
               (() => {
                   if(true){
