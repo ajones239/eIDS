@@ -222,7 +222,7 @@ class ActionModule(IOModule):
 
         self.operators = {
             '=': lambda data, value: data == value,
-            '!=': lambda data, value: data == value,
+            '!=': lambda data, value: data != value,
             'contains': lambda data, value: value in data
         }
 

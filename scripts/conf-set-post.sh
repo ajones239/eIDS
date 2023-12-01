@@ -21,6 +21,10 @@ curl -v \
                 {
                     \"id\":\"$4\",
                     \"level\": 3
+                },
+                {
+                    \"id\":\"$5\",
+                    \"level\": 4
                 }
             ],
             \"connections\": [
@@ -35,12 +39,16 @@ curl -v \
                 {
                     \"out\": \"$3\",
                     \"in\": \"$4\"
+                },
+                {
+                    \"out\": \"$4\",
+                    \"in\": \"$5\"
                 }
             ],
             \"actionConditions\": [
                 {
-                    \"actionModule\": \"$4\",
-                    \"operator\": \"=\",
+                    \"actionModule\": \"$5\",
+                    \"operator\": \"!=\",
                     \"value\": \"Normal\"
                 }
             ]
