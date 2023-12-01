@@ -10,7 +10,7 @@ class DummyAction(modules.Module, modules.ActionModule):
     def stop(self):
         pass
 
-    def doAction(self):
+    def doAction(self, data):
         with open('/tmp/eIDS/out/outfile.txt', 'a') as f:
             f.write('ALERT!\n')
 

@@ -235,13 +235,13 @@ class ActionModule(IOModule):
     def addInput(self, moduleId, data):
         for cond in self.conditions:
             if self.operators[cond['operator']](str(data), cond['value']):
-                self.doAction()
+                self.doAction(data)
 
     def getOutput(self):
         pass
 
     @abstractmethod
-    def doAction(self):
+    def doAction(self, data):
         pass
 
 

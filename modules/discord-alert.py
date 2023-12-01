@@ -12,9 +12,9 @@ class DiscordAlert(modules.Module, modules.ActionModule):
     def stop(self):
         pass
 
-    def doAction(self):
+    def doAction(self, data):
         msg = {
-            'content': 'ALERT: Attack detected!'
+            'content': 'ALERT: ' + data + ' attack detected!'
         }
         requests.post(self.webhook_url, json=msg)
 
