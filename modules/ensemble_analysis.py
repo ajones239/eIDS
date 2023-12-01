@@ -19,9 +19,12 @@ class EnsembleAnalysis(modules.Module, modules.IOModule):
         self.stream = False
 
     def getOutput(self):
-        return self.getOutputData()
+        r = self.getOutputData()
+        self.log('Returning "' + r + '" class')
+        return r
 
     def addInput(self, moduleId, data):
+        self.log('Receiving data: ' + data)
         if data is None:
             return
         r = self.evaluate_stacking_model(data,

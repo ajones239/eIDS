@@ -28,12 +28,14 @@ class Pcap2Csv(modules.Module, modules.IOModule):
 
     def getOutput(self):
         try:
+            self.log('Returning dataframe with network data')
             return self.outQueue.get_nowait()
         except Empty:
             return None
 
     def addInput(self, moduleId, data):
         try:
+            self.log('Received PCAP file')
             self.inQueue.put(data, block=False)
         except Full:
             pass
@@ -61,6 +63,7 @@ class Pcap2Csv(modules.Module, modules.IOModule):
                     break
             try:
                 pcap = self.inQueue.get_nowait()
+                self.log('Processing PCAP file')
                 if pcap is None:
                     continue
             except Empty:
@@ -76,11 +79,13 @@ class Pcap2Csv(modules.Module, modules.IOModule):
                 os.path.join(self.getTempDir(), 'in', 'f.pcap'),
                 os.path.join(self.getTempDir(), 'out')
             ]
+            self.log('Running CICFlowMeter')
             subprocess.run(cmds)
             os.remove(os.path.join(self.getTempDir(), 'in', 'f.pcap'))
             data = pandas.read_csv(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'))
             # data = data.rename(columns=data.iloc[0]).drop(data.index[0])
             print(data)
+            self.log('Deleting temporary CSV file')
             os.remove(os.path.join(self.getTempDir(), 'out', 'f_ISCX.csv'))
             try:
                 self.outQueue.put(self.processDataframe(data), block=False)
@@ -93,6 +98,7 @@ class Pcap2Csv(modules.Module, modules.IOModule):
                 self.setHasOutput(False)
 
     def processDataframe(self, df):
+        self.log('Converting dataframe to usable format')
         cols_to_drop = ['Flow ID', 'Src IP', 'Dst Port', 'Src Port', 'Dst IP', 'Dst Port', 'Protocol', 'Timestamp', 'Label']
         cols_to_rename = {
             # 'Dst Port': 'Destination Port',

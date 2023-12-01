@@ -23,6 +23,7 @@ class NICCapture(modules.Module, modules.IOModule):
 
     def getOutput(self):
         try:
+            self.log('Returning path to PCAP file')
             return self.pcapQueue.get()
         except Empty:
             return None
@@ -48,13 +49,18 @@ class NICCapture(modules.Module, modules.IOModule):
             with self.doneLock:
                 if self.done:
                     break
+            interface = 'wlp6s0'
+            self.log('Capturing network on NIC ' + interface)
+
             outfile = self.getTempFilePath('f' + str(self.fcount) + '.pcap')
-            cap = pyshark.LiveCapture(interface='wlp6s0', output_file=outfile)
+            cap = pyshark.LiveCapture(interface=interface, output_file=outfile)
             cap.sniff(timeout=self.dataFrequencyN)
             cap.close()
             try:
+                self.log('Saving data as PCAP file.')
                 self.pcapQueue.put(outfile, block=True, timeout=self.dataFrequencyN)
             except Full:
+                self.log('Queue full, skipping timeblock')
                 time.sleep(self.dataFrequencyN)
                 continue
             self.fcount += 1

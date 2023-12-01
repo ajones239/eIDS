@@ -9,9 +9,9 @@ class DataGrapher(modules.Module, modules.IOModule):
         super(DataGrapher, self).__init__()
         self.dbclient = None
         self.db = None
-        self.log('Starting DataGrapher Module')
 
     def getOutput(self):
+        self.log('Sending attack type to action module')
         return self.getOutputData()
 
     def addInput(self, moduleId, data):
@@ -25,12 +25,14 @@ class DataGrapher(modules.Module, modules.IOModule):
         }
         r = random.uniform(0, 6)
         l = classes[int(r)]
+        self.log('Recording attack type: ' + l)
         self.setOutput(l)
         self.db.insert_one({'g_id':"graph_id2",'x_value': datetime.datetime.utcnow(),'y_value': l})
 
     def start(self):
         self.dbclient = MongoClient('mongodb://localhost:27017/')
         self.db = self.dbclient['eIDS']['graphdata']
+        self.log('Starting DataGrapher Module')
 
     def stop(self):
         pass

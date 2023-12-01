@@ -24,9 +24,12 @@ class CNNAnalysis(modules.Module, modules.IOModule):
         super(CNNAnalysis, self).__init__()
 
     def getOutput(self):
-        return self.getOutputData()
+        r = self.getOutputData()
+        self.log('Returning "' + r + '" class')
+        return r
 
     def addInput(self, moduleId, data):
+        self.log('Processing data: ' + data)
         if data is None:
             return
         r = self.predict_max_class_label(
